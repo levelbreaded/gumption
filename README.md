@@ -5,7 +5,7 @@
 ## Install
 
 ```bash
-$ npm install --global gumption
+$ npm link && npm install --global gumption
 ```
 
 ## CLI
