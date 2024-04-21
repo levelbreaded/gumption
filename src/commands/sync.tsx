@@ -1,12 +1,15 @@
 import React from 'react';
-import {CommandProps} from '../command-registry.js';
+import {Text} from 'ink';
+import {type CommandProps} from '../command-registry.js';
 
-const Sync = ({}: CommandProps) => {
-	return <div></div>;
-};
+function Sync({cli, input}: CommandProps) {
+	console.log('Rendered', {cli, input});
+	return <Text>Sync command</Text>;
+}
 
 export const syncConfig = {
-	validateProps: ({}: CommandProps) => {
+	validateProps({cli, input}: CommandProps) {
+		console.log({cli, input});
 		return {
 			valid: true,
 			errors: [],

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Text, Box} from 'ink';
+import {type Result} from 'meow';
 import {REGISTERED_COMMANDS, RegisteredCommand} from './command-registry.js';
-import {Result} from 'meow';
 
 type Props = {
 	readonly cli: Result<any>;
@@ -10,15 +10,14 @@ type Props = {
 export default function App({cli}: Props) {
 	const [_attemptedCommand, ...restOfInput] = cli.input;
 	let attemptedCommand = _attemptedCommand?.toLowerCase();
-	if (!cli.input.length) {
+	if (cli.input.length === 0) {
 		attemptedCommand = 'help';
 	}
 
 	const selectedCommand = Object.keys(REGISTERED_COMMANDS).find(
 		(registeredCommand: string) =>
-			attemptedCommand ===
-			REGISTERED_COMMANDS[registeredCommand as RegisteredCommand]?.name,
-	) as RegisteredCommand | undefined;
+			attemptedCommand === REGISTERED_COMMANDS[registeredCommand]?.name,
+	);
 
 	if (selectedCommand === undefined) {
 		return (
@@ -53,7 +52,7 @@ export default function App({cli}: Props) {
 					<Text color="red">{attemptedCommand}</Text>
 				</Text>
 				{errors?.map((error, idx) => (
-					<Text key={`error-${idx}`}>
+					<Text key={error}>
 						- <Text color="red">{error}</Text>
 					</Text>
 				))}

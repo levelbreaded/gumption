@@ -50,7 +50,19 @@
 		"extends": "xo-react",
 		"prettier": true,
 		"rules": {
-			"react/prop-types": "off"
+			"react/prop-types": "off",
+			"@typescript-eslint/naming-convention": [
+				"warn",
+				{
+					"selector": "default",
+					"format": [
+						"camelCase",
+						"PascalCase",
+						"UPPER_CASE"
+					],
+					"leadingUnderscore": "allow"
+				}
+			]
 		}
 	},
 	"prettier": "@vdemedes/prettier-config"

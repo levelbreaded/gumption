@@ -1,11 +1,11 @@
 import React from 'react';
 import {Box, Text} from 'ink';
-import {CommandProps, REGISTERED_COMMANDS} from '../command-registry.js';
+import {type CommandProps, REGISTERED_COMMANDS} from '../command-registry.js';
 
-const Help = ({input}: CommandProps) => {
-	if (!input.length) {
+function Help({input}: CommandProps) {
+	if (input.length === 0) {
 		return (
-			<Box flexDirection={'column'}>
+			<Box flexDirection="column">
 				<Text color="blue">=== Help ====</Text>
 				{Object.values(REGISTERED_COMMANDS).map(command => (
 					<Text key={command.name}>
@@ -30,17 +30,18 @@ const Help = ({input}: CommandProps) => {
 	}
 
 	return (
-		<Box flexDirection={'column'}>
+		<Box flexDirection="column">
 			<Text color="blue">==== Help ===</Text>
 			<Text color="yellow">──── {command.name} ────</Text>
 			<Text>{command.description}</Text>
 			<Text>Usage - {command.usage}</Text>
 		</Box>
 	);
-};
+}
 
 export const helpConfig = {
-	validateProps: ({}: CommandProps) => {
+	validateProps({cli, input}: CommandProps) {
+		console.log({cli, input});
 		return {
 			valid: true,
 			errors: [],

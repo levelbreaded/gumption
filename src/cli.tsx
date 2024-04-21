@@ -3,7 +3,7 @@ import React from 'react';
 import {render} from 'ink';
 import meow from 'meow';
 import App from './app.js';
-import {Command, REGISTERED_COMMANDS} from './command-registry.js';
+import {type Command, REGISTERED_COMMANDS} from './command-registry.js';
 
 const commandList = Object.values(REGISTERED_COMMANDS).map(
 	(command: Command, idx: number) => {

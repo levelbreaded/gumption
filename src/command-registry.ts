@@ -1,9 +1,9 @@
-import {Result} from 'meow';
+import {type Result} from 'meow';
+import {type ComponentType} from 'react';
 import Help, {helpConfig} from './commands/help.js';
 import Sync, {syncConfig} from './commands/sync.js';
-import {ComponentType} from 'react';
 
-type ValidateProps<T extends object> = (props: T) => {
+type ValidateProps<T extends Record<string, unknown>> = (props: T) => {
 	valid: boolean;
 	errors?: string[];
 };
