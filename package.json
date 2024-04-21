@@ -10,7 +10,7 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch",
-		"test": "prettier --check . && xo && ava",
+		"lint": "prettier --check . && xo",
 		"fix": "prettier --write . && xo --fix"
 	},
 	"files": [
@@ -26,7 +26,6 @@
 		"@sindresorhus/tsconfig": "^3.0.1",
 		"@types/react": "^18.0.32",
 		"@vdemedes/prettier-config": "^2.0.1",
-		"ava": "^5.2.0",
 		"chalk": "^5.2.0",
 		"eslint-config-xo-react": "^0.27.0",
 		"eslint-plugin-react": "^7.32.2",
@@ -36,15 +35,6 @@
 		"ts-node": "^10.9.1",
 		"typescript": "^5.0.3",
 		"xo": "^0.55.0"
-	},
-	"ava": {
-		"extensions": {
-			"ts": "module",
-			"tsx": "module"
-		},
-		"nodeArguments": [
-			"--loader=ts-node/esm"
-		]
 	},
 	"xo": {
 		"extends": "xo-react",
