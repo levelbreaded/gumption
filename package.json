@@ -10,6 +10,7 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch",
+		"lint": "prettier --check . && xo && ava",
 		"test": "prettier --check . && xo && ava",
 		"fix": "prettier --write . && xo --fix"
 	},
