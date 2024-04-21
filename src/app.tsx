@@ -1,7 +1,7 @@
 import React from 'react';
 import {Text, Box} from 'ink';
 import {type Result} from 'meow';
-import {REGISTERED_COMMANDS, RegisteredCommand} from './command-registry.js';
+import {REGISTERED_COMMANDS} from './command-registry.js';
 
 type Props = {
 	readonly cli: Result<any>;
@@ -51,7 +51,7 @@ export default function App({cli}: Props) {
 					Invalid inputs for command:{' '}
 					<Text color="red">{attemptedCommand}</Text>
 				</Text>
-				{errors?.map((error, idx) => (
+				{errors?.map(error => (
 					<Text key={error}>
 						- <Text color="red">{error}</Text>
 					</Text>
