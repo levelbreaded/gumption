@@ -24,6 +24,7 @@
 		"react": "^18.2.0"
 	},
 	"devDependencies": {
+		"@ava/typescript": "^4.1.0",
 		"@sindresorhus/tsconfig": "^3.0.1",
 		"@types/react": "^18.0.32",
 		"@vdemedes/prettier-config": "^2.0.1",
@@ -40,12 +41,17 @@
 	},
 	"ava": {
 		"extensions": {
-			"ts": "module",
 			"tsx": "module"
 		},
 		"nodeArguments": [
 			"--loader=ts-node/esm"
-		]
+		],
+		"typescript": {
+			"rewritePaths": {
+				"src/": "dist/"
+			},
+			"compile": false
+		}
 	},
 	"xo": {
 		"extends": "xo-react",
