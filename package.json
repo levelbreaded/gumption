@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch",
-		"lint": "prettier --check . && xo && ava",
-		"test": "prettier --check . && xo && ava",
+		"lint": "prettier --check . && xo",
+		"test": "ava",
 		"fix": "prettier --write . && xo --fix"
 	},
 	"files": [
@@ -62,6 +62,16 @@
 						"UPPER_CASE"
 					],
 					"leadingUnderscore": "allow"
+				}
+			],
+			"import/extensions": [
+				"error",
+				"ignorePackages",
+				{
+					"js": "never",
+					"jsx": "never",
+					"ts": "never",
+					"tsx": "never"
 				}
 			]
 		}
