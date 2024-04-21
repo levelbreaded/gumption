@@ -8,8 +8,7 @@ on:
 jobs:
   lint_test:
     runs-on: ubuntu-latest
-    container:
-      image: node:18
+    container: node:18
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
