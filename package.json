@@ -11,13 +11,14 @@
 		"build": "tsc",
 		"dev": "tsc --watch",
 		"test": "prettier --check . && xo && ava",
-	  	"fix": "prettier --write . && xo --fix"
+		"fix": "prettier --write . && xo --fix"
 	},
 	"files": [
 		"dist"
 	],
 	"dependencies": {
 		"ink": "^4.1.0",
+		"ink-select-input": "^5.0.0",
 		"meow": "^11.0.0",
 		"react": "^18.2.0"
 	},

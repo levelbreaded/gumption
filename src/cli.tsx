@@ -3,27 +3,29 @@ import React from 'react';
 import {render} from 'ink';
 import meow from 'meow';
 import App from './app.js';
+import {Command, REGISTERED_COMMANDS} from './command-registry.js';
+
+const commandList = Object.values(REGISTERED_COMMANDS).map(
+	(command: Command, idx: number) => {
+		return `${idx === 0 ? '' : '\t'}[${command.name}] ${command.description}`;
+	},
+);
 
 const cli = meow(
 	`
 	Usage
-	  $ gumption
+	  $ gumption <COMMAND>
 
-	Options
-		--name  Your name
+	Commands
+	${commandList.join('\n')}
 
-	Examples
-	  $ gumption --name=Jane
-	  Hello, Jane
+	Help
+	  $ gumption help
+	  $ gumption help <COMMAND>
 `,
 	{
 		importMeta: import.meta,
-		flags: {
-			name: {
-				type: 'string',
-			},
-		},
 	},
 );
 
-render(<App name={cli.flags.name} />);
+render(<App cli={cli} />);
