@@ -2,7 +2,10 @@
 	"name": "gumption",
 	"version": "0.0.0",
 	"license": "MIT",
-	"bin": "dist/cli.js",
+	"bin": {
+		"gumption": "dist/cli.js",
+		"gum": "dist/cli.js"
+	},
 	"type": "module",
 	"engines": {
 		"node": ">=16"
