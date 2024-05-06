@@ -42,7 +42,7 @@ export default function App({cli}: Props) {
 		? command.config.validateProps({
 				cli,
 				input: restOfInput,
-			})
+		  })
 		: {valid: true, errors: []};
 
 	if (!valid) {
