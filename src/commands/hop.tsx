@@ -63,8 +63,11 @@ const Hop = () => {
 		<>
 			{newBranch ? (
 				<Box flexDirection="column">
-					<Text color="blue" dimColor italic>
-						{currentBranch}
+					<Text>
+						<Text color="blue" dimColor italic>
+							{currentBranch}
+						</Text>
+						↴
 					</Text>
 					<Text>
 						Hopped to{' '}
