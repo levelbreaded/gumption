@@ -2,7 +2,7 @@ import {type Result} from 'meow';
 import {type ComponentType} from 'react';
 import Help, {helpConfig} from './commands/help.js';
 import Sync, {syncConfig} from './commands/sync.js';
-import Hop, {hopConfig} from "./commands/hop.js";
+import Hop, {hopConfig} from './commands/hop.js';
 
 type ValidateProps<T extends Record<string, unknown>> = (props: T) => {
 	valid: boolean;

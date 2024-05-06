@@ -46,6 +46,7 @@
 		"prettier": true,
 		"rules": {
 			"react/prop-types": "off",
+			"n/prefer-global/process": "off",
 			"@typescript-eslint/naming-convention": [
 				"warn",
 				{

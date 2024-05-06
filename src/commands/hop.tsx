@@ -1,11 +1,11 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import SelectInput from 'ink-select-input';
 import {Box, Text, useApp} from 'ink';
-import ErrorDisplay from '../components/ErrorDisplay.js';
-import {useGit} from '../hooks/useGit.js';
-import GumptionItemComponent from '../components/GumptionItemComponent.js';
+import ErrorDisplay from '../components/error-display.js';
+import {useGit} from '../hooks/use-git.js';
+import GumptionItemComponent from '../components/gumption-item-component.js';
 
-const Hop = () => {
+function Hop() {
 	const git = useGit();
 	const {exit} = useApp();
 	const [allBranches, setAllBranches] = useState<string[]>([]);
@@ -20,10 +20,10 @@ const Hop = () => {
 			setCurrentBranch(current);
 		};
 
-		getLocalBranches();
-	}, [setAllBranches, setCurrentBranch]);
+		void getLocalBranches();
+	}, [git, setAllBranches, setCurrentBranch]);
 
-	const handleSelect = (item: any) => {
+	const handleSelect = (item: {label: string; value: string}) => {
 		const updateCurrentBranch = async () => {
 			const {current} = await git.branchLocal();
 			setNewBranch(current);
@@ -31,10 +31,12 @@ const Hop = () => {
 
 		git
 			.checkout(item.value)
-			.then(() => {
+			.then(async () => {
 				return updateCurrentBranch();
 			})
-			.catch(e => setError(e))
+			.catch((error: Error) => {
+				setError(error);
+			})
 			.finally(() => {
 				exit();
 			});
@@ -53,33 +55,29 @@ const Hop = () => {
 		return <ErrorDisplay error={error} />;
 	}
 
-	return (
-		<>
-			{newBranch ? (
-				<Box flexDirection="column">
-					<Box gap={1}>
-						<Text color="cyan" dimColor italic>
-							{currentBranch}
-						</Text>
-						<Text bold>↴</Text>
-					</Box>
-					<Text>
-						Hopped to{' '}
-						<Text color="green" bold>
-							{newBranch}
-						</Text>
-					</Text>
-				</Box>
-			) : (
-				<SelectInput
-					items={items}
-					onSelect={handleSelect}
-					itemComponent={GumptionItemComponent}
-				/>
-			)}
-		</>
+	return newBranch ? (
+		<Box flexDirection="column">
+			<Box gap={1}>
+				<Text dimColor italic color="cyan">
+					{currentBranch}
+				</Text>
+				<Text bold>↴</Text>
+			</Box>
+			<Text>
+				Hopped to{' '}
+				<Text bold color="green">
+					{newBranch}
+				</Text>
+			</Text>
+		</Box>
+	) : (
+		<SelectInput
+			items={items}
+			itemComponent={GumptionItemComponent}
+			onSelect={handleSelect}
+		/>
 	);
-};
+}
 
 export const hopConfig = {
 	description: 'Hop to other branches',
