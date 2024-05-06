@@ -14,30 +14,22 @@ export type CommandProps = {
 };
 
 type CommandConfig = {
+	description: string;
+	usage: string;
 	validateProps: ValidateProps<CommandProps>;
 };
 
 export type Command = {
-	name: string;
-	description: string;
-	usage: string;
 	component: ComponentType<CommandProps>;
 	config: CommandConfig;
 };
 
 export const REGISTERED_COMMANDS: Record<string, Command> = {
-	SYNC: {
-		name: 'sync',
-		description: 'Sync your local changes with the remote server',
-		usage: 'sync',
+	sync: {
 		component: Sync,
 		config: syncConfig,
 	},
-	HELP: {
-		name: 'help',
-		description:
-			'Get help on a specific command or list all available commands',
-		usage: 'help | help <COMMAND>',
+	help: {
 		component: Help,
 		config: helpConfig,
 	},

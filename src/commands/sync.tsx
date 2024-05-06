@@ -8,6 +8,8 @@ function Sync({cli, input}: CommandProps) {
 }
 
 export const syncConfig = {
+	description: 'Sync your local changes with the remote server',
+	usage: 'sync',
 	validateProps({cli, input}: CommandProps) {
 		console.log({cli, input});
 		return {
