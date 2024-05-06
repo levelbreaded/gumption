@@ -2,6 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {CommandProps} from '../command-registry.js';
 import {simpleGit, SimpleGitOptions} from 'simple-git';
 import SelectInput from 'ink-select-input';
+import {useApp} from 'ink';
 import ErrorDisplay from '../components/ErrorDisplay.js';
 
 const Hop = () => {
@@ -12,6 +13,7 @@ const Hop = () => {
 		trimmed: false,
 	};
 	const git = simpleGit(options);
+	const {exit} = useApp();
 	const [allBranches, setAllBranches] = useState<string[]>([]);
 	const [currentBranch, setCurrentBranch] = useState('');
 	const [error, setError] = useState<Error | undefined>(undefined);
@@ -29,7 +31,10 @@ const Hop = () => {
 	const handleSelect = (item: any) => {
 		git
 			.checkout(item.value)
-			.then(() => console.log('Switched to branch', item.value))
+			.then(() => {
+				console.log('Switched to branch', item.value)
+				exit();
+			})
 			.catch(e => setError(e));
 	};
 
