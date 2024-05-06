@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {CommandProps} from '../command-registry.js';
 import {simpleGit, SimpleGitOptions} from 'simple-git';
 import SelectInput from 'ink-select-input';
-import {log} from 'util';
+import ErrorDisplay from '../components/ErrorDisplay.js';
 
 const Hop = () => {
 	const options: Partial<SimpleGitOptions> = {
@@ -14,6 +14,7 @@ const Hop = () => {
 	const git = simpleGit(options);
 	const [allBranches, setAllBranches] = useState<string[]>([]);
 	const [currentBranch, setCurrentBranch] = useState('');
+	const [error, setError] = useState<Error | undefined>(undefined);
 
 	useEffect(() => {
 		const getLocalBranches = async () => {
@@ -28,7 +29,8 @@ const Hop = () => {
 	const handleSelect = (item: any) => {
 		git
 			.checkout(item.value)
-			.then(() => console.log('Switched to branch', item.value));
+			.then(() => console.log('Switched to branch', item.value))
+			.catch(e => setError(e));
 	};
 
 	const items = useMemo(() => {
@@ -39,6 +41,10 @@ const Hop = () => {
 				value: branch,
 			}));
 	}, [allBranches, currentBranch]);
+
+	if (error) {
+		return <ErrorDisplay error={error} />;
+	}
 
 	return <SelectInput items={items} onSelect={handleSelect} />;
 };
