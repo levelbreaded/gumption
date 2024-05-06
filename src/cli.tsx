@@ -3,11 +3,13 @@ import React from 'react';
 import {render} from 'ink';
 import meow from 'meow';
 import App from './app.js';
-import {type Command, REGISTERED_COMMANDS} from './command-registry.js';
+import {REGISTERED_COMMANDS} from './command-registry.js';
 
-const commandList = Object.values(REGISTERED_COMMANDS).map(
-	(command: Command, idx: number) => {
-		return `${idx === 0 ? '' : '\t'}[${command.name}] ${command.description}`;
+const commandList = Object.entries(REGISTERED_COMMANDS).map(
+	([commandName, command], idx: number) => {
+		return `${idx === 0 ? '' : '\t'}[${commandName}] ${
+			command.config.description
+		}`;
 	},
 );
 

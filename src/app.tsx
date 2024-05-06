@@ -15,8 +15,7 @@ export default function App({cli}: Props) {
 	}
 
 	const selectedCommand = Object.keys(REGISTERED_COMMANDS).find(
-		(registeredCommand: string) =>
-			attemptedCommand === REGISTERED_COMMANDS[registeredCommand]?.name,
+		(registeredCommand: string) => attemptedCommand === registeredCommand,
 	);
 
 	if (selectedCommand === undefined) {

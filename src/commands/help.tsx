@@ -7,39 +7,43 @@ function Help({input}: CommandProps) {
 		return (
 			<Box flexDirection="column">
 				<Text color="blue">=== Help ====</Text>
-				{Object.values(REGISTERED_COMMANDS).map(command => (
-					<Text key={command.name}>
-						<Text color="blue">[{command.name}]</Text> -{' '}
-						<Text>{command.description}</Text>
+				{Object.entries(REGISTERED_COMMANDS).map(([_commandName, _command]) => (
+					<Text key={_commandName}>
+						<Text color="blue">[{_commandName}]</Text> -{' '}
+						<Text>{_command.config.description}</Text>
 					</Text>
 				))}
 			</Box>
 		);
 	}
 
-	const [commandName] = input;
-	if (!commandName) {
+	const [inputCommandName] = input;
+	if (!inputCommandName) {
 		return <Text color="red">Command not found.</Text>;
 	}
 
-	const command = Object.values(REGISTERED_COMMANDS).find(
-		command => command.name === commandName,
-	);
-	if (!command) {
+	const [commandName, command] =
+		Object.entries(REGISTERED_COMMANDS).find(
+			([_commandName, _command]) => _commandName === inputCommandName,
+		) ?? [];
+
+	if (!commandName || !command) {
 		return <Text color="red">Command not found.</Text>;
 	}
 
 	return (
 		<Box flexDirection="column">
 			<Text color="blue">==== Help ===</Text>
-			<Text color="yellow">──── {command.name} ────</Text>
-			<Text>{command.description}</Text>
-			<Text>Usage - {command.usage}</Text>
+			<Text color="yellow">──── {commandName} ────</Text>
+			<Text>{command.config.description}</Text>
+			<Text>Usage - {command.config.usage}</Text>
 		</Box>
 	);
 }
 
 export const helpConfig = {
+	description: 'Get help on a specific command or list all available commands',
+	usage: 'help | help <COMMAND>',
 	validateProps({cli, input}: CommandProps) {
 		console.log({cli, input});
 		return {
