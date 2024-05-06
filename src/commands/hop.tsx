@@ -17,6 +17,7 @@ const Hop = () => {
 	const [allBranches, setAllBranches] = useState<string[]>([]);
 	const [currentBranch, setCurrentBranch] = useState('');
 	const [error, setError] = useState<Error | undefined>(undefined);
+	const [success, setSuccess] = useState(false);
 
 	useEffect(() => {
 		const getLocalBranches = async () => {
@@ -29,13 +30,21 @@ const Hop = () => {
 	}, [setAllBranches, setCurrentBranch]);
 
 	const handleSelect = (item: any) => {
+		const updateCurrentBranch = async () => {
+			const {current} = await git.branchLocal();
+			setCurrentBranch(current);
+		};
+
 		git
 			.checkout(item.value)
 			.then(() => {
-				console.log('Switched to branch', item.value)
-				exit();
+				setSuccess(true)
+				return updateCurrentBranch();
 			})
-			.catch(e => setError(e));
+			.catch(e => setError(e))
+			.finally(() => {
+				exit();
+			});
 	};
 
 	const items = useMemo(() => {
@@ -51,7 +60,12 @@ const Hop = () => {
 		return <ErrorDisplay error={error} />;
 	}
 
-	return <SelectInput items={items} onSelect={handleSelect} />;
+	return (
+		<>
+			{success && <Text>Hopped to {currentBranch}</Text>}
+			<SelectInput items={items} onSelect={handleSelect} />
+		</>
+	);
 };
 
 export const hopConfig = {
