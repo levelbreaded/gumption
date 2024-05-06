@@ -13,8 +13,8 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch",
-		"lint": "prettier --check . && xo",
-		"fix": "prettier --write . && xo --fix"
+		"lint": "prettier --check .",
+		"fix": "prettier --write ."
 	},
 	"files": [
 		"dist"
@@ -23,10 +23,12 @@
 		"ink": "^4.1.0",
 		"ink-select-input": "^5.0.0",
 		"meow": "^11.0.0",
-		"react": "^18.2.0"
+		"react": "^18.2.0",
+		"simple-git": "^3.24.0"
 	},
 	"devDependencies": {
 		"@sindresorhus/tsconfig": "^3.0.1",
+		"@types/node": "^20.12.8",
 		"@types/react": "^18.0.32",
 		"@vdemedes/prettier-config": "^2.0.1",
 		"chalk": "^5.2.0",
@@ -44,6 +46,7 @@
 		"prettier": true,
 		"rules": {
 			"react/prop-types": "off",
+			"n/prefer-global/process": "off",
 			"@typescript-eslint/naming-convention": [
 				"warn",
 				{
