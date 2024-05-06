@@ -3,6 +3,7 @@ import SelectInput from 'ink-select-input';
 import {Box, Text, useApp} from 'ink';
 import ErrorDisplay from '../components/ErrorDisplay.js';
 import {useGit} from '../hooks/useGit.js';
+import GumptionItemComponent from '../components/GumptionItemComponent.js';
 
 const Hop = () => {
 	const git = useGit();
@@ -70,7 +71,11 @@ const Hop = () => {
 					</Text>
 				</Box>
 			) : (
-				<SelectInput items={items} onSelect={handleSelect} />
+				<SelectInput
+					items={items}
+					onSelect={handleSelect}
+					itemComponent={GumptionItemComponent}
+				/>
 			)}
 		</>
 	);
