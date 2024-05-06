@@ -22,9 +22,10 @@ function Help({input}: CommandProps) {
 		return <Text color="red">Command not found.</Text>;
 	}
 
-	const [commandName, command] = Object.entries(REGISTERED_COMMANDS).find(
-		([_commandName, _command]) => _commandName === inputCommandName,
-	) ?? [];
+	const [commandName, command] =
+		Object.entries(REGISTERED_COMMANDS).find(
+			([_commandName, _command]) => _commandName === inputCommandName,
+		) ?? [];
 
 	if (!commandName || !command) {
 		return <Text color="red">Command not found.</Text>;
