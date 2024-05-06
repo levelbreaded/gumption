@@ -1,65 +1,44 @@
 {
-	"name": "gumption",
-	"version": "0.0.0",
-	"license": "MIT",
-	"bin": {
-		"gumption": "dist/cli.js",
-		"gum": "dist/cli.js"
-	},
-	"type": "module",
-	"engines": {
-		"node": ">=16"
-	},
-	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --watch",
-		"lint": "prettier --check .",
-		"fix": "prettier --write ."
-	},
-	"files": [
-		"dist"
-	],
-	"dependencies": {
-		"ink": "^4.1.0",
-		"ink-select-input": "^5.0.0",
-		"meow": "^11.0.0",
-		"react": "^18.2.0",
-		"simple-git": "^3.24.0"
-	},
-	"devDependencies": {
-		"@sindresorhus/tsconfig": "^3.0.1",
-		"@types/node": "^20.12.8",
-		"@types/react": "^18.0.32",
-		"@vdemedes/prettier-config": "^2.0.1",
-		"chalk": "^5.2.0",
-		"eslint-config-xo-react": "^0.27.0",
-		"eslint-plugin-react": "^7.32.2",
-		"eslint-plugin-react-hooks": "^4.6.0",
-		"ink-testing-library": "^3.0.0",
-		"prettier": "^2.8.7",
-		"ts-node": "^10.9.1",
-		"typescript": "^5.0.3",
-		"xo": "^0.55.0"
-	},
-	"xo": {
-		"extends": "xo-react",
-		"prettier": true,
-		"rules": {
-			"react/prop-types": "off",
-			"n/prefer-global/process": "off",
-			"@typescript-eslint/naming-convention": [
-				"warn",
-				{
-					"selector": "default",
-					"format": [
-						"camelCase",
-						"PascalCase",
-						"UPPER_CASE"
-					],
-					"leadingUnderscore": "allow"
-				}
-			]
-		}
-	},
-	"prettier": "@vdemedes/prettier-config"
+    "name": "gumption",
+    "version": "0.0.0",
+    "license": "MIT",
+    "bin": {
+        "gumption": "dist/cli.js",
+        "gum": "dist/cli.js"
+    },
+    "type": "module",
+    "engines": {
+        "node": ">=16"
+    },
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "lint": "prettier --write . && eslint src",
+        "fix": "eslint src --fix"
+    },
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "ink": "^4.1.0",
+        "ink-select-input": "^5.0.0",
+        "meow": "^11.0.0",
+        "react": "^18.2.0",
+        "simple-git": "^3.24.0"
+    },
+    "devDependencies": {
+        "@sindresorhus/tsconfig": "^3.0.1",
+        "@types/node": "^20.12.8",
+        "@types/react": "^18.0.32",
+        "chalk": "^5.2.0",
+        "eslint": "^8.49.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-prettier": "^5.0.0",
+        "eslint-plugin-sort-imports-es6-autofix": "^0.6.0",
+        "ink-testing-library": "^3.0.0",
+        "prettier": "^3.0.3",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.0.3",
+        "typescript-eslint": "7.2.0"
+    }
 }
