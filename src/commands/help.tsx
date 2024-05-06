@@ -3,7 +3,6 @@ import {Box, Text} from 'ink';
 import {type CommandProps, REGISTERED_COMMANDS} from '../command-registry.js';
 
 function Help({input}: CommandProps) {
-	console.log("yada")
 	if (input.length === 0) {
 		return (
 			<Box flexDirection="column">
