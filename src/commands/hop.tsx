@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {CommandProps} from '../command-registry.js';
 import {simpleGit, SimpleGitOptions} from 'simple-git';
 import SelectInput from 'ink-select-input';
-import {useApp} from 'ink';
+import {useApp, Text} from 'ink';
 import ErrorDisplay from '../components/ErrorDisplay.js';
 
 const Hop = () => {
