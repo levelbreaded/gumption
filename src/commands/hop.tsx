@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {CommandProps} from '../command-registry.js';
 import {simpleGit, SimpleGitOptions} from 'simple-git';
 import SelectInput from 'ink-select-input';
-import {useApp, Text} from 'ink';
+import {Box, Text, useApp} from 'ink';
 import ErrorDisplay from '../components/ErrorDisplay.js';
 
 const Hop = () => {
@@ -16,8 +16,8 @@ const Hop = () => {
 	const {exit} = useApp();
 	const [allBranches, setAllBranches] = useState<string[]>([]);
 	const [currentBranch, setCurrentBranch] = useState('');
+	const [newBranch, setNewBranch] = useState<string | undefined>(undefined);
 	const [error, setError] = useState<Error | undefined>(undefined);
-	const [success, setSuccess] = useState(false);
 
 	useEffect(() => {
 		const getLocalBranches = async () => {
@@ -32,13 +32,12 @@ const Hop = () => {
 	const handleSelect = (item: any) => {
 		const updateCurrentBranch = async () => {
 			const {current} = await git.branchLocal();
-			setCurrentBranch(current);
+			setNewBranch(current);
 		};
 
 		git
 			.checkout(item.value)
 			.then(() => {
-				setSuccess(true)
 				return updateCurrentBranch();
 			})
 			.catch(e => setError(e))
@@ -62,8 +61,21 @@ const Hop = () => {
 
 	return (
 		<>
-			{success && <Text>Hopped to {currentBranch}</Text>}
-			<SelectInput items={items} onSelect={handleSelect} />
+			{newBranch ? (
+				<Box flexDirection="column">
+					<Text color="blue" dimColor italic>
+						{currentBranch}
+					</Text>
+					<Text>
+						Hopped to{' '}
+						<Text color="blue" bold>
+							{newBranch}
+						</Text>
+					</Text>
+				</Box>
+			) : (
+				<SelectInput items={items} onSelect={handleSelect} />
+			)}
 		</>
 	);
 };
