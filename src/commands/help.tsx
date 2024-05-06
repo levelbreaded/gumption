@@ -44,13 +44,6 @@ function Help({input}: CommandProps) {
 export const helpConfig = {
 	description: 'Get help on a specific command or list all available commands',
 	usage: 'help | help <COMMAND>',
-	validateProps({cli, input}: CommandProps) {
-		console.log({cli, input});
-		return {
-			valid: true,
-			errors: [],
-		};
-	},
 };
 
 export default Help;

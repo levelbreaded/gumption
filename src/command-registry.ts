@@ -17,7 +17,7 @@ export type CommandProps = {
 type CommandConfig = {
 	description: string;
 	usage: string;
-	validateProps: ValidateProps<CommandProps>;
+	validateProps?: ValidateProps<CommandProps>;
 };
 
 export type Command = {

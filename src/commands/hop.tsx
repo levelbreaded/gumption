@@ -1,18 +1,11 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {CommandProps} from '../command-registry.js';
-import {simpleGit, SimpleGitOptions} from 'simple-git';
 import SelectInput from 'ink-select-input';
 import {Box, Text, useApp} from 'ink';
 import ErrorDisplay from '../components/ErrorDisplay.js';
+import {useGit} from '../hooks/useGit.js';
 
 const Hop = () => {
-	const options: Partial<SimpleGitOptions> = {
-		baseDir: process.cwd(),
-		binary: 'git',
-		maxConcurrentProcesses: 6,
-		trimmed: false,
-	};
-	const git = simpleGit(options);
+	const git = useGit();
 	const {exit} = useApp();
 	const [allBranches, setAllBranches] = useState<string[]>([]);
 	const [currentBranch, setCurrentBranch] = useState('');
@@ -63,7 +56,7 @@ const Hop = () => {
 		<>
 			{newBranch ? (
 				<Box flexDirection="column">
-					<Box gap={2}>
+					<Box gap={1}>
 						<Text color="blue" dimColor italic>
 							{currentBranch}
 						</Text>
@@ -85,14 +78,7 @@ const Hop = () => {
 
 export const hopConfig = {
 	description: 'Hop to other branches',
-	usage: 'hop | hop <branch-name>',
-	validateProps({cli, input}: CommandProps) {
-		console.log({cli, input});
-		return {
-			valid: true,
-			errors: [],
-		};
-	},
+	usage: 'hop',
 };
 
 export default Hop;

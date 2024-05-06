@@ -38,10 +38,12 @@ export default function App({cli}: Props) {
 		);
 	}
 
-	const {valid, errors} = command.config.validateProps({
-		cli,
-		input: restOfInput,
-	});
+	const {valid, errors} = command.config.validateProps
+		? command.config.validateProps({
+				cli,
+				input: restOfInput,
+		  })
+		: {valid: true, errors: []};
 
 	if (!valid) {
 		return (
