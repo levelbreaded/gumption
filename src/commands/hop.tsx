@@ -19,14 +19,22 @@ function Hop({ input }: CommandProps) {
     const [maybeSearchTerm] = input;
 
     useEffect(() => {
+        if (currentBranch) return;
         const getLocalBranches = async () => {
-            const { all, current } = await git.branchLocal();
-            setAllBranches(all);
+            const { current } = await git.branchLocal();
             setCurrentBranch((prev) => prev ?? current);
+        };
+        void getLocalBranches();
+    }, [git, setCurrentBranch, currentBranch]);
+
+    useEffect(() => {
+        const getLocalBranches = async () => {
+            const { all } = await git.branchLocal();
+            setAllBranches(all);
         };
 
         void getLocalBranches();
-    }, [git, setAllBranches, setCurrentBranch]);
+    }, [git, setAllBranches]);
 
     const handleSelect = useCallback(
         (item: { label: string; value: string }) => {
