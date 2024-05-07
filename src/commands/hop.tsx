@@ -15,7 +15,7 @@ function Hop({ input }: CommandProps) {
     const [newBranch, setNewBranch] = useState<string | undefined>(undefined);
     const [error, setError] = useState<Error | undefined>(undefined);
 
-    const [maybeSearchTerm] = input;
+    const [searchTerm]: [string | undefined] = input;
 
     useEffect(() => {
         if (currentBranch) return;
@@ -59,13 +59,11 @@ function Hop({ input }: CommandProps) {
 
         return allBranches
             .filter((branch) =>
-                maybeSearchTerm
-                    ? branch
-                          .toLowerCase()
-                          .includes(maybeSearchTerm.toLowerCase())
+                searchTerm
+                    ? branch.toLowerCase().includes(searchTerm.toLowerCase())
                     : true
             )
-            .filter((branch) => maybeSearchTerm || branch !== currentBranch)
+            .filter((branch) => searchTerm || branch !== currentBranch)
             .map((branch) => ({
                 label: branch,
                 value: branch,
@@ -76,12 +74,12 @@ function Hop({ input }: CommandProps) {
         return <ErrorDisplay error={error} />;
     }
 
-    if (!items.length && maybeSearchTerm) {
+    if (!items.length && searchTerm) {
         return (
             <Text>
                 No branches match the pattern:{' '}
                 <Text color="cyan" bold>
-                    {maybeSearchTerm}
+                    {searchTerm}
                 </Text>
             </Text>
         );
