@@ -42,6 +42,9 @@ function Hop() {
     };
 
     const items = useMemo(() => {
+        if (allBranches.length === 1) {
+            return [{ label: currentBranch, value: currentBranch }];
+        }
         return allBranches
             .filter((branch) => branch !== currentBranch)
             .map((branch) => ({
