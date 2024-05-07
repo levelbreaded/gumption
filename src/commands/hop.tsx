@@ -60,18 +60,15 @@ function Hop({ input }: CommandProps) {
             return [{ label: currentBranch, value: currentBranch }];
         }
 
-        const searchedBranches = allBranches.filter((branch) =>
-            maybeSearchTerm
-                ? branch.toLowerCase().includes(maybeSearchTerm.toLowerCase())
-                : true
-        );
-
-        if (!searchedBranches.length) {
-            return [];
-        }
-
-        return searchedBranches
-            .filter((branch) => branch !== currentBranch)
+        return allBranches
+            .filter((branch) =>
+                maybeSearchTerm
+                    ? branch
+                          .toLowerCase()
+                          .includes(maybeSearchTerm.toLowerCase())
+                    : true
+            )
+            .filter((branch) => maybeSearchTerm || branch !== currentBranch)
             .map((branch) => ({
                 label: branch,
                 value: branch,
