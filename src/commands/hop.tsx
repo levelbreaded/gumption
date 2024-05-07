@@ -10,7 +10,9 @@ function Hop({ input }: CommandProps) {
     const git = useGit();
     const { exit } = useApp();
     const [allBranches, setAllBranches] = useState<string[]>([]);
-    const [currentBranch, setCurrentBranch] = useState('');
+    const [currentBranch, setCurrentBranch] = useState<string | undefined>(
+        undefined
+    );
     const [newBranch, setNewBranch] = useState<string | undefined>(undefined);
     const [error, setError] = useState<Error | undefined>(undefined);
 
@@ -48,18 +50,24 @@ function Hop({ input }: CommandProps) {
     );
 
     const items = useMemo(() => {
+        if (!currentBranch) return [];
+
         if (allBranches.length === 1) {
             return [{ label: currentBranch, value: currentBranch }];
         }
-        return allBranches
+
+        const searchedBranches = allBranches.filter((branch) =>
+            maybeSearchTerm
+                ? branch.toLowerCase().includes(maybeSearchTerm.toLowerCase())
+                : true
+        );
+
+        if (!searchedBranches.length) {
+            return [];
+        }
+
+        return searchedBranches
             .filter((branch) => branch !== currentBranch)
-            .filter((branch) =>
-                maybeSearchTerm
-                    ? branch
-                          .toLowerCase()
-                          .includes(maybeSearchTerm.toLowerCase())
-                    : true
-            )
             .map((branch) => ({
                 label: branch,
                 value: branch,
@@ -70,22 +78,37 @@ function Hop({ input }: CommandProps) {
         return <ErrorDisplay error={error} />;
     }
 
-    return newBranch ? (
-        <Box flexDirection="column">
-            <Box gap={1}>
-                <Text dimColor italic color="cyan">
-                    {currentBranch}
-                </Text>
-                <Text bold>↴</Text>
-            </Box>
+    if (!items.length && maybeSearchTerm) {
+        return (
             <Text>
-                Hopped to{' '}
-                <Text bold color="green">
-                    {newBranch}
+                No branches match the pattern:{' '}
+                <Text color="cyan" bold>
+                    {maybeSearchTerm}
                 </Text>
             </Text>
-        </Box>
-    ) : (
+        );
+    }
+
+    if (newBranch) {
+        return (
+            <Box flexDirection="column">
+                <Box gap={1}>
+                    <Text dimColor italic color="cyan">
+                        {currentBranch}
+                    </Text>
+                    <Text bold>↴</Text>
+                </Box>
+                <Text>
+                    Hopped to{' '}
+                    <Text bold color="green">
+                        {newBranch}
+                    </Text>
+                </Text>
+            </Box>
+        );
+    }
+
+    return (
         <SelectInput
             items={items}
             itemComponent={GumptionItemComponent}
