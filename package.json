@@ -13,8 +13,8 @@
     "scripts": {
         "build": "tsc",
         "dev": "tsc --watch",
-        "lint": "prettier --write . && eslint src",
-        "fix": "eslint src --fix"
+        "lint": "prettier --check . && eslint src",
+        "fix": "prettier --write . && eslint src --fix"
     },
     "files": [
         "dist"

@@ -41,19 +41,19 @@ function Hop() {
             });
     };
 
-	const items = useMemo(() => {
-		const shouldFilter = allBranches.length > 1;
-		let maybeFilteredAllBranches = allBranches;
-		if (shouldFilter) {
-			maybeFilteredAllBranches = allBranches.filter(
-				branch => branch !== currentBranch,
-			);
-		}
-		return maybeFilteredAllBranches.map(branch => ({
-			label: branch,
-			value: branch,
-		}));
-	}, [allBranches, currentBranch]);
+    const items = useMemo(() => {
+        const shouldFilter = allBranches.length > 1;
+        let maybeFilteredAllBranches = allBranches;
+        if (shouldFilter) {
+            maybeFilteredAllBranches = allBranches.filter(
+                (branch) => branch !== currentBranch
+            );
+        }
+        return maybeFilteredAllBranches.map((branch) => ({
+            label: branch,
+            value: branch,
+        }));
+    }, [allBranches, currentBranch]);
 
     if (error) {
         return <ErrorDisplay error={error} />;

@@ -3,26 +3,26 @@
     "parser": "@typescript-eslint/parser",
     "plugins": ["@typescript-eslint", "sort-imports-es6-autofix"],
     "parserOptions": {
-      "ecmaVersion": 2018,
-      "sourceType": "module",
-      "project": "./tsconfig.json"
+        "ecmaVersion": 2018,
+        "sourceType": "module",
+        "project": "./tsconfig.json"
     },
     "extends": [
-      "plugin:@typescript-eslint/recommended",
-      "prettier",
-      "plugin:prettier/recommended",
-      "plugin:@typescript-eslint/recommended-type-checked"
+        "plugin:@typescript-eslint/recommended",
+        "prettier",
+        "plugin:prettier/recommended",
+        "plugin:@typescript-eslint/recommended-type-checked"
     ],
     "rules": {
-      "sort-imports-es6-autofix/sort-imports-es6": [
-        "error",
-        {
-          "ignoreCase": false,
-          "ignoreMemberSort": false,
-          "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
-        }
-      ],
-      "@typescript-eslint/switch-exhaustiveness-check": "error",
-      "@typescript-eslint/no-explicit-any": "warn"
+        "sort-imports-es6-autofix/sort-imports-es6": [
+            "error",
+            {
+                "ignoreCase": false,
+                "ignoreMemberSort": false,
+                "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
+            }
+        ],
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
+        "@typescript-eslint/no-explicit-any": "warn"
     }
-  }
+}
