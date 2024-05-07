@@ -1,4 +1,5 @@
 import { type SimpleGit, type SimpleGitOptions, simpleGit } from 'simple-git';
+import { useMemo } from 'react';
 
 const options: Partial<SimpleGitOptions> = {
     baseDir: process.cwd(),
@@ -8,5 +9,5 @@ const options: Partial<SimpleGitOptions> = {
 };
 
 export const useGit = (): SimpleGit => {
-    return simpleGit(options);
+    return useMemo(() => simpleGit(options), []);
 };
