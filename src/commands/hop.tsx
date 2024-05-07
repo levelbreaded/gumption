@@ -42,17 +42,15 @@ function Hop() {
     };
 
     const items = useMemo(() => {
-        const shouldFilter = allBranches.length > 1;
-        let maybeFilteredAllBranches = allBranches;
-        if (shouldFilter) {
-            maybeFilteredAllBranches = allBranches.filter(
-                (branch) => branch !== currentBranch
-            );
+        if (allBranches.length === 1) {
+            return [{ label: currentBranch, value: currentBranch }];
         }
-        return maybeFilteredAllBranches.map((branch) => ({
-            label: branch,
-            value: branch,
-        }));
+        return allBranches
+            .filter((branch) => branch !== currentBranch)
+            .map((branch) => ({
+                label: branch,
+                value: branch,
+            }));
     }, [allBranches, currentBranch]);
 
     if (error) {
