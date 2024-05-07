@@ -1,17 +1,20 @@
 import ErrorDisplay from '../components/error-display.js';
 import GumptionItemComponent from '../components/gumption-item-component.js';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import SelectInput from 'ink-select-input';
 import { Box, Text, useApp } from 'ink';
+import { CommandProps } from '../command-registry.js';
 import { useGit } from '../hooks/use-git.js';
 
-function Hop() {
+function Hop({ input }: CommandProps) {
     const git = useGit();
     const { exit } = useApp();
     const [allBranches, setAllBranches] = useState<string[]>([]);
     const [currentBranch, setCurrentBranch] = useState('');
     const [newBranch, setNewBranch] = useState<string | undefined>(undefined);
     const [error, setError] = useState<Error | undefined>(undefined);
+
+    const [maybeSearchTerm] = input;
 
     useEffect(() => {
         const getLocalBranches = async () => {
@@ -23,23 +26,26 @@ function Hop() {
         void getLocalBranches();
     }, [git, setAllBranches, setCurrentBranch]);
 
-    const handleSelect = (item: { label: string; value: string }) => {
-        const updateCurrentBranch = async () => {
-            const { current } = await git.branchLocal();
-            setNewBranch(current);
-        };
+    const handleSelect = useCallback(
+        (item: { label: string; value: string }) => {
+            const updateCurrentBranch = async () => {
+                const { current } = await git.branchLocal();
+                setNewBranch(current);
+            };
 
-        git.checkout(item.value)
-            .then(async () => {
-                return updateCurrentBranch();
-            })
-            .catch((error: Error) => {
-                setError(error);
-            })
-            .finally(() => {
-                exit();
-            });
-    };
+            git.checkout(item.value)
+                .then(() => {
+                    void updateCurrentBranch();
+                })
+                .catch((error: Error) => {
+                    setError(error);
+                })
+                .finally(() => {
+                    exit();
+                });
+        },
+        [git, setNewBranch, setError, exit]
+    );
 
     const items = useMemo(() => {
         if (allBranches.length === 1) {
@@ -47,6 +53,13 @@ function Hop() {
         }
         return allBranches
             .filter((branch) => branch !== currentBranch)
+            .filter((branch) =>
+                maybeSearchTerm
+                    ? branch
+                          .toLowerCase()
+                          .includes(maybeSearchTerm.toLowerCase())
+                    : true
+            )
             .map((branch) => ({
                 label: branch,
                 value: branch,
@@ -84,7 +97,7 @@ function Hop() {
 
 export const hopConfig = {
     description: 'Hop to other branches',
-    usage: 'hop',
+    usage: 'hop | hop <SEARCH_TERM>',
 };
 
 export default Hop;
