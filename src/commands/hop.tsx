@@ -22,7 +22,7 @@ function Hop({ input }: CommandProps) {
         const getLocalBranches = async () => {
             const { all, current } = await git.branchLocal();
             setAllBranches(all);
-            setCurrentBranch(current);
+            setCurrentBranch((prev) => prev ?? current);
         };
 
         void getLocalBranches();
