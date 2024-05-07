@@ -77,6 +77,7 @@ function Hop() {
             items={items}
             itemComponent={GumptionItemComponent}
             onSelect={handleSelect}
+            limit={10}
         />
     );
 }
