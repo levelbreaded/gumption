@@ -2,7 +2,7 @@ import ErrorDisplay from '../components/error-display.js';
 import GumptionItemComponent from '../components/gumption-item-component.js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import SelectInput from 'ink-select-input';
-import { Box, Text, useApp } from 'ink';
+import { Box, Text } from 'ink';
 import { CommandProps } from '../command-registry.js';
 import { useGit } from '../hooks/use-git.js';
 
