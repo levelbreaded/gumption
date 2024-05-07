@@ -8,7 +8,6 @@ import { useGit } from '../hooks/use-git.js';
 
 function Hop({ input }: CommandProps) {
     const git = useGit();
-    const { exit } = useApp();
     const [allBranches, setAllBranches] = useState<string[]>([]);
     const [currentBranch, setCurrentBranch] = useState<string | undefined>(
         undefined
@@ -49,12 +48,9 @@ function Hop({ input }: CommandProps) {
                 })
                 .catch((error: Error) => {
                     setError(error);
-                })
-                .finally(() => {
-                    exit();
                 });
         },
-        [git, setNewBranch, setError, exit]
+        [git, setNewBranch, setError]
     );
 
     const items = useMemo(() => {
