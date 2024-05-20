@@ -1,13 +1,10 @@
-import { type SimpleGit, type SimpleGitOptions, simpleGit } from 'simple-git';
+import {
+    DEFAULT_OPTIONS,
+    GitService,
+    createGitService,
+} from '../services/git.js';
 import { useMemo } from 'react';
 
-const options: Partial<SimpleGitOptions> = {
-    baseDir: process.cwd(),
-    binary: 'git',
-    maxConcurrentProcesses: 6,
-    trimmed: false,
-};
-
-export const useGit = (): SimpleGit => {
-    return useMemo(() => simpleGit(options), []);
+export const useGit = (): GitService => {
+    return useMemo(() => createGitService({ options: DEFAULT_OPTIONS }), []);
 };

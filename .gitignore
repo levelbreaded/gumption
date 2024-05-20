@@ -3,3 +3,7 @@ dist
 
 # IntelliJ IDEA
 /.idea
+
+# Yalc
+/.yalc
+yalc.lock
