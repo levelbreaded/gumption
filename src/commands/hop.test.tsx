@@ -2,6 +2,7 @@ import GumptionItemComponent from '../components/gumption-item-component.js';
 import Hop from './hop.js';
 import React from 'react';
 import SelectInput from 'ink-select-input';
+import { KEYS } from '../utils/test-helpers.js';
 import { delay } from '../utils/delay.js';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from '@levelbreaded/ink-testing-library';
@@ -80,6 +81,23 @@ describe('correctly renders hop UI', () => {
                 checkout: async () => {},
             };
         });
+        const { lastFrame } = render(
+            <Hop
+                cli={{
+                    flags: {},
+                    unnormalizedFlags: {},
+                }}
+                input={[]}
+            />
+        );
+
+        await delay(100);
+
+        expect(lastFrame()).to.includes('branch10');
+        expect(lastFrame()).to.not.includes('branch11');
+    });
+
+    it('renders success message', async () => {
         const { lastFrame, stdin } = render(
             <Hop
                 cli={{
@@ -90,13 +108,14 @@ describe('correctly renders hop UI', () => {
             />
         );
         await delay(100);
-        stdin.write('j');
-        await delay(500);
-        stdin.write('j');
-        await delay(500);
+        stdin.write(KEYS.down);
+        await delay(100);
+        stdin.write(KEYS.return);
+        await delay(100);
 
-        console.log('lastFrame', lastFrame());
-        expect(lastFrame()).to.includes('branch10');
-        expect(lastFrame()).to.not.includes('branch11');
+        expect(lastFrame()).to.includes('branch1');
+        expect(lastFrame()).to.includes('↴');
+        expect(lastFrame()).to.includes('Hopped to');
+        expect(lastFrame()).to.includes('branch3');
     });
 });

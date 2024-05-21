@@ -1,11 +1,9 @@
 import React from 'react';
 import { type CommandProps } from '../command-registry.js';
-import Fake from './fake.js';
 
-function Sync({}: CommandProps) {
-    // console.log('Rendered', { cli, input });
-    // return <Text>Sync command</Text>;
-    return <Fake />;
+function Sync({ cli, input }: CommandProps) {
+    console.log('Rendered', { cli, input });
+    return <Text>Sync command</Text>;
 }
 
 export const syncConfig = {

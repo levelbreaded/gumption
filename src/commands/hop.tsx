@@ -34,14 +34,9 @@ function Hop({ input }: CommandProps) {
 
     const handleSelect = useCallback(
         (item: { label: string; value: string }) => {
-            const updateCurrentBranch = async () => {
-                const { current } = await git.branchLocal();
-                setNewBranch(current);
-            };
-
             git.checkout(item.value)
                 .then(() => {
-                    void updateCurrentBranch();
+                    setNewBranch(item.label);
                 })
                 .catch((error: Error) => {
                     setError(error);

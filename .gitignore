@@ -7,3 +7,6 @@ dist
 # Yalc
 /.yalc
 yalc.lock
+
+# .npmrc
+.npmrc
