@@ -24,11 +24,11 @@ Github Packages so it can read Github Packages.
 
 3.  Run `npm i` to install dependencies as usual.
 
-4. Link the package to your global npm packages:
+4.  Link the package to your global npm packages:
 
-	```bash
-	$ npm link && npm install --global gumption
-	```
+    ```bash
+    $ npm link && npm install --global gumption
+    ```
 
 ## Documentation
 
