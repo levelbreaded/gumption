@@ -4,7 +4,7 @@ import React from 'react';
 import SelectInput from 'ink-select-input';
 import { delay } from '../utils/delay.js';
 import { describe, expect, it, vi } from 'vitest';
-import { render } from 'ink-testing-library';
+import { render } from '@levelbreaded/ink-testing-library';
 
 const mocks = vi.hoisted(() => {
     return {

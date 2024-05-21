@@ -28,6 +28,7 @@
         "simple-git": "^3.24.0"
     },
     "devDependencies": {
+        "@levelbreaded/ink-testing-library": "^3.1.0",
         "@sindresorhus/tsconfig": "^3.0.1",
         "@types/node": "^20.12.8",
         "@types/react": "^18.0.32",
@@ -36,7 +37,6 @@
         "eslint-config-prettier": "^9.0.0",
         "eslint-plugin-prettier": "^5.0.0",
         "eslint-plugin-sort-imports-es6-autofix": "^0.6.0",
-        "ink-testing-library": "file:.yalc/ink-testing-library",
         "prettier": "^3.0.3",
         "ts-node": "^10.9.1",
         "typescript": "^5.0.3",
