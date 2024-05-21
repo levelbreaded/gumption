@@ -9,7 +9,7 @@ on:
             - '**'
 
 permissions:
-  packages: read
+    packages: read
 
 jobs:
     lint_test:
@@ -21,9 +21,11 @@ jobs:
               with:
                   node-version: 18.x
             - name: NPM Registry Auth
-              run: echo "//npm.pkg.github.com/:_authToken=${{ env.GITHUB_TOKEN }}" > .npmrc
+              run:
+                  echo "//npm.pkg.github.com/:_authToken=${{ env.GITHUB_TOKEN
+                  }}" > .npmrc
               env:
-                GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+                  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
             - name: Install dependencies
               run: npm ci
             - name: Build

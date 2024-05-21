@@ -1,5 +1,6 @@
 import React from 'react';
 import { type CommandProps } from '../command-registry.js';
+import { Text } from 'ink';
 
 function Sync({ cli, input }: CommandProps) {
     console.log('Rendered', { cli, input });
