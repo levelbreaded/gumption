@@ -3,7 +3,7 @@ import Hop from './hop.js';
 import React from 'react';
 import SelectInput from 'ink-select-input';
 import { KEYS } from '../utils/test-helpers.js';
-import { delay } from '../utils/delay.js';
+import { delay } from '../utils/time.js';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from '@levelbreaded/ink-testing-library';
 
