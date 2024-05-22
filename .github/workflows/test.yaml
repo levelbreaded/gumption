@@ -8,6 +8,9 @@ on:
         branches:
             - '**'
 
+permissions:
+    packages: read
+
 jobs:
     lint_test:
         runs-on: ubuntu-latest
@@ -17,9 +20,17 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 18.x
+            - name: NPM Registry Auth
+              run:
+                  echo "//npm.pkg.github.com/:_authToken=${{ env.GITHUB_TOKEN
+                  }}" > .npmrc
+              env:
+                  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
             - name: Install dependencies
               run: npm ci
             - name: Build
               run: npm run build
             - name: Lint
               run: npm run lint
+            - name: Test
+              run: npm run test
