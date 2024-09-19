@@ -10,7 +10,7 @@ type ValidateProps<T extends Record<string, unknown>> = (props: T) => {
 };
 
 export type CommandProps = {
-    cli: Pick<Result<unknown>, 'flags' | 'unnormalizedFlags'>;
+    cli: Pick<Result<any>, 'flags' | 'unnormalizedFlags'>;
     input: string[];
 };
 
