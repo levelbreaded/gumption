@@ -4,7 +4,7 @@ import { REGISTERED_COMMANDS } from './command-registry.js';
 import { type Result } from 'meow';
 
 type Props = {
-    readonly cli: Result<any>;
+    readonly cli: Result<unknown>;
 };
 
 export default function App({ cli }: Props) {
