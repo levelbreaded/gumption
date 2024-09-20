@@ -26,36 +26,38 @@ We will keep track of which branches are being handled this way in some system
 file.
 
 ## Commands
+
 Note: all commands would get abbreviated aliases (i.e. `branch hop` -> `bh`)
 
-1. `branch hop` - list all branches, not just tracked ones, let's you search with
-   partial string and then menu select a branch to hop to, basically git switch
-   with better search & UI
+1. `branch hop` - list all branches, not just tracked ones, let's you search
+   with partial string and then menu select a branch to hop to, basically git
+   switch with better search & UI
 2. `continue` - basically just `git rebase --continue`
 3. `changes add` - basically just `git add .`
-4. `branch attach` - opens a menu to select a branch, rebases your current branch "onto"
-   that chosen branch
+4. `branch attach` - opens a menu to select a branch, rebases your current
+   branch "onto" that chosen branch
 5. `track` - start "tracking" current branch
 6. `changes commit` (idk what to call this) - basically `git commit -am ""` and
    takes a message argument
-7. `branch new` - basically `git checkout -b [name] && git commit -am ""`
-   where the branch name is auto-generated from the commit message
+7. `branch new` - basically `git checkout -b [name] && git commit -am ""` where
+   the branch name is auto-generated from the commit message
 8. `ls` - view tracked branches in a tree structure visually
 9. `up [number]` - go "up" the tree, i.e. to the child of the current branch.
    Show selection options if multiple children. "number" is the number of levels
    up
 10. `down [number]` - go "down" the tree, i.e. to parent of current branch.
     "number" is the number of levels down
-11. `branch submit` - submit this branch to github, if it's stacked on something make
-    that the target. Option to submit everything in branch of the tree down to
-    the root.
+11. `branch submit` - submit this branch to github, if it's stacked on something
+    make that the target. Option to submit everything in branch of the tree down
+    to the root.
 
 ## Priorities / Organization
 
 ### Low-hanging Fruit
 
 -   `branch hop` is basically done
--   `changes add`, `changes commit`, `branch new` -> should be easy to build, just git aliases basically
+-   `changes add`, `changes commit`, `branch new` -> should be easy to build,
+    just git aliases basically
 
 ### Commands that require we build "the tree"
 
