@@ -26,18 +26,19 @@ We will keep track of which branches are being handled this way in some system
 file.
 
 ## Commands
+Note: all commands would get abbreviated aliases (i.e. `branch hop` -> `bh`)
 
-1. `hop` - list all branches, not just tracked ones, let's you search with
+1. `branch hop` - list all branches, not just tracked ones, let's you search with
    partial string and then menu select a branch to hop to, basically git switch
    with better search & UI
 2. `continue` - basically just `git rebase --continue`
-3. `all` - basically just `git add .`
-4. `onto` - opens a menu to select a branch, rebases your current branch "onto"
+3. `changes add` - basically just `git add .`
+4. `branch attach` - opens a menu to select a branch, rebases your current branch "onto"
    that chosen branch
 5. `track` - start "tracking" current branch
-6. `go` / `send` (idk what to call this) - basically `git commit -am ""` and
+6. `changes commit` (idk what to call this) - basically `git commit -am ""` and
    takes a message argument
-7. `new` - basically `git checkout -b [name] && git commit -am ""`
+7. `branch new` - basically `git checkout -b [name] && git commit -am ""`
    where the branch name is auto-generated from the commit message
 8. `ls` - view tracked branches in a tree structure visually
 9. `up [number]` - go "up" the tree, i.e. to the child of the current branch.
@@ -45,7 +46,7 @@ file.
    up
 10. `down [number]` - go "down" the tree, i.e. to parent of current branch.
     "number" is the number of levels down
-11. `submit` - submit this branch to github, if it's stacked on something make
+11. `branch submit` - submit this branch to github, if it's stacked on something make
     that the target. Option to submit everything in branch of the tree down to
     the root.
 
@@ -53,8 +54,8 @@ file.
 
 ### Low-hanging Fruit
 
--   `hop` is basically done
--   `all`, `go`, `new` -> should be easy to build, just git aliases basically
+-   `branch hop` is basically done
+-   `changes add`, `changes commit`, `branch new` -> should be easy to build, just git aliases basically
 
 ### Commands that require we build "the tree"
 
@@ -65,18 +66,18 @@ branches are stacked on which branches.
 
 ### Commands that can be built now, might need to be changed after "the tree"
 
--   `onto`, `continue`
+-   `brnach attach`, `continue`
 
 ## Plan
 
-1. Polish `hop`
-2. Build `all`
-3. Build `go`
-4. Build `new`
+1. Polish `branch hop`
+2. Build `changes add`
+3. Build `changes commit`
+4. Build `branch new`
 
 This is now v0.
 
-5. Build `onto`
+5. Build `branch attach`
 6. Build `continue`
 
 This is now v0.1.X
@@ -89,7 +90,7 @@ This is now v0.1.X
 This is v0.2.X
 
 11. Build Github integration to make/track PRs
-12. Build `submit`
+12. Build `branch submit`
 
 This is v0.3.X
 
