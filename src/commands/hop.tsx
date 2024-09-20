@@ -3,7 +3,7 @@ import GumptionItemComponent from '../components/gumption-item-component.js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import SelectInput from 'ink-select-input';
 import { Box, Text } from 'ink';
-import { CommandProps } from '../command-registry.js';
+import { CommandConfig, CommandProps } from '../types.js';
 import { useGit } from '../hooks/use-git.js';
 
 function Hop({ input }: CommandProps) {
@@ -109,9 +109,11 @@ function Hop({ input }: CommandProps) {
     );
 }
 
-export const hopConfig = {
+export const hopConfig: CommandConfig = {
     description: 'Hop to other branches',
     usage: 'hop | hop <SEARCH_TERM>',
+    key: 'hop',
+    aliases: ['h'],
 };
 
 export default Hop;

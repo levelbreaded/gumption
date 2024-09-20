@@ -1,5 +1,5 @@
 import React from 'react';
-import { type CommandProps } from '../command-registry.js';
+import { CommandConfig, CommandProps } from '../types.js';
 import { Text } from 'ink';
 
 function Sync({ cli, input }: CommandProps) {
@@ -7,9 +7,10 @@ function Sync({ cli, input }: CommandProps) {
     return <Text>Sync command</Text>;
 }
 
-export const syncConfig = {
+export const syncConfig: CommandConfig = {
     description: 'Sync your local changes with the remote server',
     usage: 'sync',
+    key: 'sync',
 };
 
 export default Sync;
