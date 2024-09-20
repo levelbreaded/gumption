@@ -37,7 +37,7 @@ file.
 5. `track` - start "tracking" current branch
 6. `go` / `send` (idk what to call this) - basically `git commit -am ""` and
    takes a message argument
-7. `feat` / `create` - basically `git checkout -b [name] && git commit -am ""`
+7. `new` - basically `git checkout -b [name] && git commit -am ""`
    where the branch name is auto-generated from the commit message
 8. `ls` - view tracked branches in a tree structure visually
 9. `up [number]` - go "up" the tree, i.e. to the child of the current branch.
@@ -54,7 +54,7 @@ file.
 ### Low-hanging Fruit
 
 -   `hop` is basically done
--   `all`, `go`, `feat` -> should be easy to build, just git aliases basically
+-   `all`, `go`, `new` -> should be easy to build, just git aliases basically
 
 ### Commands that require we build "the tree"
 
@@ -72,7 +72,7 @@ branches are stacked on which branches.
 1. Polish `hop`
 2. Build `all`
 3. Build `go`
-4. Build `feat`
+4. Build `new`
 
 This is now v0.
 
