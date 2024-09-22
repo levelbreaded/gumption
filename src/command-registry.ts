@@ -1,9 +1,13 @@
 import Help, { helpConfig } from './commands/help.js';
 import Hop, { hopConfig } from './commands/hop.js';
 import Sync, { syncConfig } from './commands/sync.js';
-import { Command } from './types.js';
+import { CommandGroup } from './types.js';
 
-export const REGISTERED_COMMANDS: Record<string, Command> = {
+export const REGISTERED_COMMANDS: CommandGroup = {
+    _group: {
+        name: 'root',
+        description: 'Gumption',
+    },
     help: {
         component: Help,
         config: helpConfig,

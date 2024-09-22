@@ -8,18 +8,17 @@ type Props = {
 };
 
 export default function App({ cli }: Props) {
-    const [_attemptedCommand, ...restOfInput] = cli.input;
-    let attemptedCommand = _attemptedCommand?.toLowerCase();
-    if (cli.input.length === 0 || !attemptedCommand) {
-        attemptedCommand = 'help';
-    }
-
-    const command = findCommand({ accessor: attemptedCommand });
+    const sanitizedInput =
+        cli.input.length === 0
+            ? ['help']
+            : cli.input.map((_) => _.toLowerCase());
+    const command = findCommand({ accessor: sanitizedInput });
 
     if (!command) {
         return (
             <Text>
-                Invalid command: <Text color="red">{attemptedCommand}</Text>
+                Invalid command:{' '}
+                <Text color="red">{sanitizedInput.join(' ')}</Text>
             </Text>
         );
     }
@@ -27,7 +26,7 @@ export default function App({ cli }: Props) {
     const { valid, errors } = command.config.validateProps
         ? command.config.validateProps({
               cli,
-              input: restOfInput,
+              input: cli.input,
           })
         : { valid: true, errors: [] };
 
@@ -36,7 +35,7 @@ export default function App({ cli }: Props) {
             <Box flexDirection="column">
                 <Text>
                     Invalid inputs for command:{' '}
-                    <Text color="red">{attemptedCommand}</Text>
+                    <Text color="red">{sanitizedInput.join(' ')}</Text>
                 </Text>
                 {errors?.map((error) => (
                     <Text key={error}>
@@ -49,5 +48,5 @@ export default function App({ cli }: Props) {
 
     const CommandHandlerComponent = command.component;
 
-    return <CommandHandlerComponent cli={cli} input={restOfInput} />;
+    return <CommandHandlerComponent cli={cli} input={cli.input} />;
 }

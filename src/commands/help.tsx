@@ -1,26 +1,38 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { CommandConfig, CommandProps } from '../types.js';
+import {
+    CommandConfig,
+    CommandGroup,
+    CommandProps,
+    isCommand,
+    isCommandGroup,
+} from '../types.js';
 import { REGISTERED_COMMANDS } from '../command-registry.js';
-import { findCommand } from '../utils/commands.js';
+import { findCommand, findCommandGroup } from '../utils/commands.js';
 
 function Help({ input }: CommandProps) {
-    if (input.length === 0 || !input[0]) {
+    const nonCommandInputs = input.filter((_) => _ !== helpConfig.key);
+
+    if (nonCommandInputs.length === 0 || !nonCommandInputs?.[0]) {
+        return <CommandList title={'Help'} group={REGISTERED_COMMANDS} />;
+    }
+
+    const commandGroup = findCommandGroup({
+        accessor: nonCommandInputs,
+        matchAliases: false,
+    });
+
+    if (commandGroup) {
         return (
-            <Box flexDirection="column">
-                <Text color="blue">=== Help ====</Text>
-                {Object.entries(REGISTERED_COMMANDS).map(([name, command]) => (
-                    <Text key={name}>
-                        <Text color="blue">[{name}]</Text> -{' '}
-                        <Text>{command.config.description}</Text>
-                    </Text>
-                ))}
-            </Box>
+            <CommandList
+                title={commandGroup._group.name}
+                group={commandGroup}
+            />
         );
     }
 
     const command = findCommand({
-        accessor: input[0],
+        accessor: nonCommandInputs,
         matchAliases: false,
     });
 
@@ -30,13 +42,44 @@ function Help({ input }: CommandProps) {
 
     return (
         <Box flexDirection="column">
-            <Text color="blue">==== Help ===</Text>
             <Text color="yellow">──── {command.config.key} ────</Text>
             <Text>{command.config.description}</Text>
             <Text>Usage - {command.config.usage}</Text>
         </Box>
     );
 }
+
+const CommandList = ({
+    title,
+    group,
+}: {
+    title: string;
+    group: CommandGroup;
+}) => {
+    return (
+        <Box flexDirection="column">
+            <Text color="light">=== {title} ====</Text>
+            {Object.entries(group)
+                .filter(([, c]) => isCommand(c) || isCommandGroup(c))
+                .map(([name, command]) => (
+                    <Text key={name}>
+                        {isCommand(command) && (
+                            <>
+                                <Text color="blue">{name}</Text> -{' '}
+                                <Text>{command.config.description}</Text>
+                            </>
+                        )}
+                        {isCommandGroup(command) && (
+                            <>
+                                <Text color="green">({name})</Text> -{' '}
+                                <Text>{command._group.description}</Text>
+                            </>
+                        )}
+                    </Text>
+                ))}
+        </Box>
+    );
+};
 
 export const helpConfig: CommandConfig = {
     description:
