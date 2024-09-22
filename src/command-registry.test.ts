@@ -10,10 +10,6 @@ import { describe, expect, it } from 'vitest';
 import { getAllAccessors } from './utils/commands.js';
 
 describe('command registry is configured correctly', () => {
-    it('yada', () => {
-        // check();
-    });
-
     it('has commands where the registered command key is the same as the key property of the command', () => {
         function allCommandsValid(
             key: string,
