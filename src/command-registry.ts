@@ -1,3 +1,4 @@
+import ChangesAdd, { changesAddConfig } from './commands/changes-add.js';
 import Help, { helpConfig } from './commands/help.js';
 import Hop, { hopConfig } from './commands/hop.js';
 import Sync, { syncConfig } from './commands/sync.js';

@@ -11,6 +11,7 @@ export interface GitService {
     _git: SimpleGit;
     branchLocal: () => Promise<ReturnType<SimpleGit['branchLocal']>>;
     checkout: (branch: string) => Promise<ReturnType<SimpleGit['checkout']>>;
+    addAllFiles: () => Promise<void>;
 }
 
 export const createGitService = ({
@@ -28,6 +29,9 @@ export const createGitService = ({
         // @ts-expect-error - being weird about the return type
         branchLocal: async () => {
             return gitEngine.branchLocal();
+        },
+        addAllFiles: async () => {
+            await gitEngine.add('.');
         },
     };
 };
