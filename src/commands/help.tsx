@@ -60,7 +60,7 @@ const CommandList = ({
         <Box flexDirection="column">
             <Text color="light">=== {title} ====</Text>
             {Object.entries(group)
-                .filter(([_, c]) => isCommand(c) || isCommandGroup(c))
+                .filter(([, c]) => isCommand(c) || isCommandGroup(c))
                 .map(([name, command]) => (
                     <Text key={name}>
                         {isCommand(command) && (
