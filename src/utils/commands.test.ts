@@ -1,60 +1,55 @@
 import { Command, CommandGroup, isCommand, isCommandGroup } from '../types.js';
 import { REGISTERED_COMMANDS } from '../command-registry.js';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { findCommand, findCommandGroup, getAllAccessors } from './commands.js';
 
-describe('findCommand is working normally', () => {
-    beforeAll(() => {
-        vi.clearAllMocks();
-        vi.resetAllMocks();
-    });
-
-    vi.mock('../command-registry.js', () => {
-        return {
-            REGISTERED_COMMANDS: {
-                test: {
+vi.mock('../command-registry.js', () => {
+    return {
+        REGISTERED_COMMANDS: {
+            test: {
+                component: null,
+                config: {
+                    key: 'test',
+                    aliases: ['t'],
+                },
+            },
+            emptyGroup1: {
+                _group: {
+                    alias: 'eg1',
+                },
+            },
+            emptyGroup2: {
+                _group: {},
+            },
+            group: {
+                _group: {
+                    alias: 'g',
+                },
+                test2: {
                     component: null,
                     config: {
-                        key: 'test',
-                        aliases: ['t'],
+                        key: 'test2',
+                        aliases: ['t2'],
                     },
                 },
-                emptyGroup1: {
+                innerGroup: {
                     _group: {
-                        alias: 'eg1',
+                        alias: 'ig',
                     },
-                },
-                emptyGroup2: {
-                    _group: {},
-                },
-                group: {
-                    _group: {
-                        alias: 'g',
-                    },
-                    test2: {
+                    test3: {
                         component: null,
                         config: {
-                            key: 'test2',
-                            aliases: ['t2'],
-                        },
-                    },
-                    innerGroup: {
-                        _group: {
-                            alias: 'ig',
-                        },
-                        test3: {
-                            component: null,
-                            config: {
-                                key: 'test3',
-                                aliases: ['t3'],
-                            },
+                            key: 'test3',
+                            aliases: ['t3'],
                         },
                     },
                 },
             },
-        };
-    });
+        },
+    };
+});
 
+describe('findCommand is working normally', () => {
     it('it works normally with empty groups', () => {
         expect(findCommand({ accessor: ['emptyGroup1'] })).to.equal(undefined);
 
@@ -249,49 +244,6 @@ describe('findCommand is working normally', () => {
 });
 
 describe('findCommandGroup is working normally', () => {
-    beforeAll(() => {
-        vi.clearAllMocks();
-        vi.resetAllMocks();
-    });
-
-    vi.mock('../command-registry.js', () => {
-        return {
-            REGISTERED_COMMANDS: {
-                test: {
-                    component: null,
-                    config: {
-                        key: 'test',
-                    },
-                },
-                emptyGroup1: {
-                    _group: {
-                        alias: 'eg1',
-                    },
-                },
-                emptyGroup2: {
-                    _group: {},
-                },
-                group: {
-                    _group: {
-                        alias: 'g',
-                    },
-                    innerGroup: {
-                        _group: {
-                            alias: 'ig',
-                        },
-                        test3: {
-                            component: null,
-                            config: {
-                                key: 'test3',
-                                aliases: ['t3'],
-                            },
-                        },
-                    },
-                },
-            },
-        };
-    });
-
     it('finds command groups that exist', () => {
         expect(
             returnsCommandGroup(
@@ -384,49 +336,6 @@ describe('findCommandGroup is working normally', () => {
 });
 
 describe('getAllAccessors is working normally', () => {
-    beforeAll(() => {
-        vi.clearAllMocks();
-        vi.resetAllMocks();
-    });
-
-    vi.mock('../command-registry.js', () => {
-        return {
-            REGISTERED_COMMANDS: {
-                test: {
-                    component: null,
-                    config: {
-                        key: 'test',
-                        aliases: ['t'],
-                    },
-                },
-                group: {
-                    _group: {
-                        alias: 'g',
-                    },
-                    test2: {
-                        component: null,
-                        config: {
-                            key: 'test2',
-                            aliases: ['t2'],
-                        },
-                    },
-                    innerGroup: {
-                        _group: {
-                            alias: 'ig',
-                        },
-                        test3: {
-                            component: null,
-                            config: {
-                                key: 'test3',
-                                aliases: ['t3'],
-                            },
-                        },
-                    },
-                },
-            },
-        };
-    });
-
     it('gets all command accessors correctly', () => {
         const result = getAllAccessors(REGISTERED_COMMANDS);
         const expected = [

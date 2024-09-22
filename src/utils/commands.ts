@@ -22,7 +22,6 @@ export const findCommandGroup = ({
     accessor: string[];
     matchAliases?: boolean;
 }): CommandGroup | undefined => {
-    console.log({ accessor, matchAliases, REGISTERED_COMMANDS });
     return _findGroup({
         group: REGISTERED_COMMANDS,
         accessor,
