@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { REGISTERED_COMMANDS } from './command-registry.js';
 import { type Result } from 'meow';
+import { findCommand } from './utils/commands.js';
 
 type Props = {
     readonly cli: Result<any>;
@@ -10,30 +10,16 @@ type Props = {
 export default function App({ cli }: Props) {
     const [_attemptedCommand, ...restOfInput] = cli.input;
     let attemptedCommand = _attemptedCommand?.toLowerCase();
-    if (cli.input.length === 0) {
+    if (cli.input.length === 0 || !attemptedCommand) {
         attemptedCommand = 'help';
     }
 
-    const selectedCommand = Object.keys(REGISTERED_COMMANDS).find(
-        (registeredCommand: string) => attemptedCommand === registeredCommand
-    );
+    const command = findCommand({ accessor: attemptedCommand });
 
-    if (selectedCommand === undefined) {
+    if (!command) {
         return (
             <Text>
                 Invalid command: <Text color="red">{attemptedCommand}</Text>
-            </Text>
-        );
-    }
-
-    const command = REGISTERED_COMMANDS[selectedCommand];
-    const CommandHandlerComponent = command?.component;
-
-    if (!command || !CommandHandlerComponent) {
-        return (
-            <Text>
-                It seems we have not configured the command: {attemptedCommand}.
-                Please try again later.
             </Text>
         );
     }
@@ -60,6 +46,8 @@ export default function App({ cli }: Props) {
             </Box>
         );
     }
+
+    const CommandHandlerComponent = command.component;
 
     return <CommandHandlerComponent cli={cli} input={restOfInput} />;
 }
