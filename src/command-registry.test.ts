@@ -1,29 +1,53 @@
+import {
+    Command,
+    CommandGroup,
+    CommandGroupConfig,
+    isCommand,
+    isCommandGroupConfig,
+} from './types.js';
 import { REGISTERED_COMMANDS } from './command-registry.js';
 import { describe, expect, it } from 'vitest';
+import { getAllAccessors } from './utils/commands.js';
 
 describe('command registry is configured correctly', () => {
+    it('yada', () => {
+        // check();
+    });
+
     it('has commands where the registered command key is the same as the key property of the command', () => {
-        const results = Object.entries(REGISTERED_COMMANDS).map(
-            ([key, command]) => key === command.config.key
+        function allCommandsValid(
+            key: string,
+            command: Command | CommandGroup | CommandGroupConfig
+        ): boolean {
+            if (isCommand(command)) {
+                return key === command.config.key;
+            }
+
+            if (isCommandGroupConfig(command)) {
+                return true;
+            }
+
+            if (typeof command !== 'object') {
+                return true;
+            }
+            return Object.entries(command).every(([_key, _command]) => {
+                return allCommandsValid(_key, _command);
+            });
+        }
+
+        const properlyConfigured = Object.entries(REGISTERED_COMMANDS).reduce(
+            (acc, [key, command]) => {
+                return acc && allCommandsValid(key, command);
+            },
+            true
         );
-        expect(results.every((_) => _)).to.equal(true);
+        expect(properlyConfigured).to.equal(true);
     });
 
     it('has unique command keys and aliases', () => {
-        const commandKeys = Object.values(REGISTERED_COMMANDS).map(
-            (command) => command.config.key
-        );
-        const commandAliases = Object.values(REGISTERED_COMMANDS).reduce(
-            (acc, curr) => [...acc, ...(curr.config.aliases ?? [])],
-            [] as string[]
-        );
+        const allAccessors = getAllAccessors(REGISTERED_COMMANDS);
+        const allAccessorsSet = new Set(allAccessors);
 
-        const commandKeysAndAliasArray = [...commandKeys, ...commandAliases];
-
-        const commandKeyAndAliasSet = new Set(commandKeysAndAliasArray);
-        expect(commandKeyAndAliasSet.size).to.equal(
-            commandKeysAndAliasArray.length,
-            'Command keys and aliases are not unique.'
-        );
+        expect(allAccessors.length).to.equal(allAccessorsSet.size);
     });
 });
