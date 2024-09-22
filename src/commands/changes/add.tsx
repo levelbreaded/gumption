@@ -1,8 +1,8 @@
-import ErrorDisplay from '../components/error-display.js';
+import ErrorDisplay from '../../components/error-display.js';
 import React, { useEffect, useState } from 'react';
-import { CommandConfig } from '../types.js';
+import { CommandConfig } from '../../types.js';
 import { Text } from 'ink';
-import { useGit } from '../hooks/use-git.js';
+import { useGit } from '../../hooks/use-git.js';
 
 function ChangedAdd() {
     const result = useChangesAdd();
@@ -71,10 +71,10 @@ const useChangesAdd = (): Action => {
 };
 
 export const changesAddConfig: CommandConfig = {
-    description: 'Sync your local changes with the remote server',
-    usage: 'changes_add',
-    key: 'changes_add',
-    aliases: ['ca'],
+    description: 'Stage all changes.',
+    usage: 'changes add',
+    key: 'add',
+    aliases: ['a'],
 };
 
 export default ChangedAdd;
