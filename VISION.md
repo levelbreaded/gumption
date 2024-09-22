@@ -15,7 +15,8 @@ Primarily, replace my use of other tools. So my flow now is:
 -   Sync command. Takes all tracked branches, rebase them on main. Any branch
     not branched off main, we rebase onto parent recursively. If a PR for that
     branch is closed, delete the branch
--   Submit a branch straight to github. If it's stacked on something then
+-   Submit a branch straight to GitHub. If it's stacked on something then submit
+    that too.
 
 ## High level behaviour
 
@@ -47,7 +48,7 @@ Note: all commands would get abbreviated aliases (i.e. `branch hop` -> `bh`)
    up
 10. `down [number]` - go "down" the tree, i.e. to parent of current branch.
     "number" is the number of levels down
-11. `branch submit` - submit this branch to github, if it's stacked on something
+11. `branch submit` - submit this branch to GitHub, if it's stacked on something
     make that the target. Option to submit everything in branch of the tree down
     to the root.
 
@@ -68,7 +69,7 @@ branches are stacked on which branches.
 
 ### Commands that can be built now, might need to be changed after "the tree"
 
--   `brnach attach`, `continue`
+-   `branch attach`, `continue`
 
 ## Plan
 
@@ -91,7 +92,7 @@ This is now v0.1.X
 
 This is v0.2.X
 
-11. Build Github integration to make/track PRs
+11. Build GitHub integration to make/track PRs
 12. Build `branch submit`
 
 This is v0.3.X
