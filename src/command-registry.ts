@@ -20,20 +20,4 @@ export const REGISTERED_COMMANDS: CommandGroup = {
         component: Sync,
         config: syncConfig,
     },
-    changes: {
-        _group: {
-            alias: 'c',
-            name: 'changes',
-            description: 'Commands related to staged changes',
-        },
-        add: {
-            component: Sync,
-            config: {
-                key: 'add',
-                aliases: ['a'],
-                usage: 'works',
-                description: 'yo',
-            },
-        },
-    } as CommandGroup,
 } as const;
