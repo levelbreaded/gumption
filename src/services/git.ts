@@ -35,8 +35,7 @@ export const createGitService = ({
             await gitEngine.add('.');
         },
         commit: async ({ message }) => {
-            const a = await gitEngine.commit(message);
-			console.log({a})
+            await gitEngine.commit(message);
         },
     };
 };
