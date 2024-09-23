@@ -12,6 +12,7 @@ export interface GitService {
     branchLocal: () => Promise<ReturnType<SimpleGit['branchLocal']>>;
     checkout: (branch: string) => Promise<ReturnType<SimpleGit['checkout']>>;
     addAllFiles: () => Promise<void>;
+    commit: (args: { message: string }) => Promise<void>;
 }
 
 export const createGitService = ({
@@ -32,6 +33,10 @@ export const createGitService = ({
         },
         addAllFiles: async () => {
             await gitEngine.add('.');
+        },
+        commit: async ({ message }) => {
+            const a = await gitEngine.commit(message);
+			console.log({a})
         },
     };
 };

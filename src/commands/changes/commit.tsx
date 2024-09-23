@@ -6,7 +6,8 @@ import { useGit } from '../../hooks/use-git.js';
 
 function ChangesCommit({ input }: CommandProps) {
     const [, , message] = input;
-    const result = useChangesCommit({ message });
+    // todo: refactor to a sanitize input pattern
+    const result = useChangesCommit({ message: message! });
 
     if (result.isError) {
         return <ErrorDisplay error={result.error} />;
