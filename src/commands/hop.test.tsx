@@ -31,13 +31,23 @@ vi.mock('../services/git.js', () => {
 
 describe('correctly renders hop UI', () => {
     it('displays branch names in a list', async () => {
-        const actual = render(
+        const actual1 = render(
             <Hop
                 cli={{
                     flags: {},
                     unnormalizedFlags: {},
                 }}
                 input={['hop']}
+            />
+        );
+
+        const actual2 = render(
+            <Hop
+                cli={{
+                    flags: {},
+                    unnormalizedFlags: {},
+                }}
+                input={['h']}
             />
         );
 
@@ -52,7 +62,8 @@ describe('correctly renders hop UI', () => {
         );
 
         await delay(100);
-        expect(actual.lastFrame()).to.equal(expected.lastFrame());
+        expect(actual1.lastFrame()).to.equal(expected.lastFrame());
+        expect(actual2.lastFrame()).to.equal(expected.lastFrame());
     });
 
     it('explains when no branches match the searched pattern', async () => {
