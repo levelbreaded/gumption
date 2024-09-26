@@ -15,7 +15,7 @@ function Hop({ input }: CommandProps) {
     const [newBranch, setNewBranch] = useState<string | undefined>(undefined);
     const [error, setError] = useState<Error | undefined>(undefined);
 
-    const [searchTerm]: Array<string | undefined> = input;
+    const [, searchTerm]: Array<string | undefined> = input;
 
     useEffect(() => {
         if (currentBranch) return;

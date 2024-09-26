@@ -37,7 +37,7 @@ describe('correctly renders hop UI', () => {
                     flags: {},
                     unnormalizedFlags: {},
                 }}
-                input={[]}
+                input={['hop']}
             />
         );
 
@@ -62,7 +62,7 @@ describe('correctly renders hop UI', () => {
                     flags: {},
                     unnormalizedFlags: {},
                 }}
-                input={['nonexistent-branch-name']}
+                input={['hop', 'nonexistent-branch-name']}
             />
         );
         await delay(100);
@@ -87,7 +87,7 @@ describe('correctly renders hop UI', () => {
                     flags: {},
                     unnormalizedFlags: {},
                 }}
-                input={[]}
+                input={['hop']}
             />
         );
 
@@ -104,7 +104,7 @@ describe('correctly renders hop UI', () => {
                     flags: {},
                     unnormalizedFlags: {},
                 }}
-                input={[]}
+                input={['hop']}
             />
         );
         await delay(100);
