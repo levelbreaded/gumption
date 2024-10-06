@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => {
     return {
         createGitService: vi.fn(({}) => {
             return {
-                commit: async ({ message }) => {
+                commit: async ({ message }: { message: string }) => {
                     console.log(message);
                     return new Promise((resolve) =>
                         setTimeout(resolve, ARBITRARY_DELAY)
