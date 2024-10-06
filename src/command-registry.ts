@@ -1,3 +1,4 @@
+import ChangesAdd, { changesAddConfig } from './commands/changes/add.js';
 import Help, { helpConfig } from './commands/help.js';
 import Hop, { hopConfig } from './commands/hop.js';
 import Sync, { syncConfig } from './commands/sync.js';
@@ -20,4 +21,15 @@ export const REGISTERED_COMMANDS: CommandGroup = {
         component: Sync,
         config: syncConfig,
     },
+    changes: {
+        _group: {
+            alias: 'c',
+            name: 'changes',
+            description: 'Commands related to staged changes',
+        },
+        add: {
+            component: ChangesAdd,
+            config: changesAddConfig,
+        },
+    } as CommandGroup,
 } as const;
