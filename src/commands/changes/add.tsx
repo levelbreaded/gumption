@@ -4,7 +4,7 @@ import { CommandConfig, CommandProps } from '../../types.js';
 import { Text } from 'ink';
 import { useGit } from '../../hooks/use-git.js';
 
-function ChangedAdd(_: CommandProps) {
+function ChangedAdd({}: CommandProps) {
     const result = useChangesAdd();
 
     if (result.isError) {
