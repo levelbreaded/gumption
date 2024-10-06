@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
+import { PropValidationResult } from './types.js';
 import { type Result } from 'meow';
 import { findCommand } from './utils/commands.js';
 
@@ -23,21 +24,21 @@ export default function App({ cli }: Props) {
         );
     }
 
-    const { valid, errors } = command.config.validateProps
+    const validationResult = command.config.validateProps
         ? command.config.validateProps({
               cli,
               input: cli.input,
           })
-        : { valid: true, errors: [] };
+        : ({ valid: true } as PropValidationResult);
 
-    if (!valid) {
+    if (!validationResult.valid) {
         return (
             <Box flexDirection="column">
                 <Text>
                     Invalid inputs for command:{' '}
                     <Text color="red">{sanitizedInput.join(' ')}</Text>
                 </Text>
-                {errors?.map((error) => (
+                {validationResult.errors.map((error) => (
                     <Text key={error}>
                         - <Text color="red">{error}</Text>
                     </Text>

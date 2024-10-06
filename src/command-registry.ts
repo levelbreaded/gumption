@@ -1,4 +1,7 @@
 import ChangesAdd, { changesAddConfig } from './commands/changes/add.js';
+import ChangesCommit, {
+    changesCommitConfig,
+} from './commands/changes/commit.js';
 import Help, { helpConfig } from './commands/help.js';
 import Hop, { hopConfig } from './commands/hop.js';
 import Sync, { syncConfig } from './commands/sync.js';
@@ -30,6 +33,10 @@ export const REGISTERED_COMMANDS: CommandGroup = {
         add: {
             component: ChangesAdd,
             config: changesAddConfig,
+        },
+        commit: {
+            component: ChangesCommit,
+            config: changesCommitConfig,
         },
     } as CommandGroup,
 } as const;

@@ -1,10 +1,15 @@
 import { ComponentType } from 'react';
 import { Result } from 'meow';
 
-type ValidateProps<T extends Record<string, unknown>> = (props: T) => {
-    valid: boolean;
-    errors?: string[];
-};
+export type ValidateProps<T extends Record<string, unknown>> = (
+    props: T
+) => PropValidationResult;
+
+export type PropValidationResult =
+    | {
+          valid: true;
+      }
+    | { valid: false; errors: string[] };
 
 export interface CommandProps extends Record<string, unknown> {
     cli: Pick<Result<any>, 'flags' | 'unnormalizedFlags'>;
