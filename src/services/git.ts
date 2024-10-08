@@ -13,6 +13,7 @@ export interface GitService {
     checkout: (branch: string) => Promise<ReturnType<SimpleGit['checkout']>>;
     addAllFiles: () => Promise<void>;
     commit: (args: { message: string }) => Promise<void>;
+    createBranch: (args: { branchName: string }) => Promise<void>;
 }
 
 export const createGitService = ({
@@ -36,6 +37,9 @@ export const createGitService = ({
         },
         commit: async ({ message }) => {
             await gitEngine.commit(message);
+        },
+        createBranch: async ({ branchName }: { branchName: string }) => {
+            await gitEngine.branch([branchName]);
         },
     };
 };

@@ -1,5 +1,6 @@
 import ErrorDisplay from '../../components/error-display.js';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
+import { Action, useAction } from '../../hooks/use-action.js';
 import { CommandConfig, CommandProps } from '../../types.js';
 import { Text } from 'ink';
 import { useGit } from '../../hooks/use-git.js';
@@ -24,52 +25,17 @@ function ChangesCommit({ input }: CommandProps) {
     );
 }
 
-type Action = { isLoading: boolean } & (
-    | {
-          isError: false;
-      }
-    | {
-          isError: true;
-          error: Error;
-      }
-);
-
-type State =
-    | {
-          type: 'LOADING';
-      }
-    | {
-          type: 'COMPLETE';
-      }
-    | {
-          type: 'ERROR';
-          error: Error;
-      };
-
 const useChangesCommit = ({ message }: { message: string }): Action => {
     const git = useGit();
-    const [state, setState] = useState<State>({ type: 'LOADING' });
 
-    useEffect(() => {
-        git.commit({ message })
-            .then(() => setState({ type: 'COMPLETE' }))
-            .catch((e: Error) => {
-                setState({ type: 'ERROR', error: e });
-            });
+    const action = useCallback(async () => {
+        await git.addAllFiles();
+        await git.commit({ message });
     }, []);
 
-    if (state.type === 'ERROR') {
-        return {
-            isLoading: false,
-            isError: true,
-            error: state.error,
-        };
-    }
-
-    return {
-        isLoading: state.type === 'LOADING',
-        isError: false,
-    };
+    return useAction({
+        actionPromise: action(),
+    });
 };
 
 export const changesCommitConfig: CommandConfig = {

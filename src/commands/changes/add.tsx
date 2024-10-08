@@ -1,5 +1,6 @@
 import ErrorDisplay from '../../components/error-display.js';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { Action, useAction } from '../../hooks/use-action.js';
 import { CommandConfig, CommandProps } from '../../types.js';
 import { Text } from 'ink';
 import { useGit } from '../../hooks/use-git.js';
@@ -22,52 +23,12 @@ function ChangedAdd({}: CommandProps) {
     );
 }
 
-type Action = { isLoading: boolean } & (
-    | {
-          isError: false;
-      }
-    | {
-          isError: true;
-          error: Error;
-      }
-);
-
-type State =
-    | {
-          type: 'LOADING';
-      }
-    | {
-          type: 'COMPLETE';
-      }
-    | {
-          type: 'ERROR';
-          error: Error;
-      };
-
 const useChangesAdd = (): Action => {
     const git = useGit();
-    const [state, setState] = useState<State>({ type: 'LOADING' });
 
-    useEffect(() => {
-        git.addAllFiles()
-            .then(() => setState({ type: 'COMPLETE' }))
-            .catch((e: Error) => {
-                setState({ type: 'ERROR', error: e });
-            });
-    }, []);
-
-    if (state.type === 'ERROR') {
-        return {
-            isLoading: false,
-            isError: true,
-            error: state.error,
-        };
-    }
-
-    return {
-        isLoading: state.type === 'LOADING',
-        isError: false,
-    };
+    return useAction({
+        actionPromise: git.addAllFiles(),
+    });
 };
 
 export const changesAddConfig: CommandConfig = {
