@@ -11,10 +11,15 @@ const mocks = vi.hoisted(() => {
     return {
         createGitService: vi.fn(({}) => {
             return {
+                addAllFiles: async () => {
+                    return new Promise((resolve) =>
+                        setTimeout(resolve, ARBITRARY_DELAY / 2)
+                    );
+                },
                 commit: async ({ message }: { message: string }) => {
                     console.log(message);
                     return new Promise((resolve) =>
-                        setTimeout(resolve, ARBITRARY_DELAY)
+                        setTimeout(resolve, ARBITRARY_DELAY / 2)
                     );
                 },
             };
