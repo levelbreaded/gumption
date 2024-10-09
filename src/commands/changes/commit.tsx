@@ -28,13 +28,13 @@ function ChangesCommit({ input }: CommandProps) {
 const useChangesCommit = ({ message }: { message: string }): Action => {
     const git = useGit();
 
-    const action = useCallback(async () => {
+    const performAction = useCallback(async () => {
         await git.addAllFiles();
         await git.commit({ message });
     }, []);
 
     return useAction({
-        actionPromise: action(),
+        asyncAction: performAction,
     });
 };
 

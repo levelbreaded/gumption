@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 
 export const useAction = ({
-    actionPromise,
+    asyncAction,
 }: {
-    actionPromise: Promise<void>;
+    asyncAction: () => Promise<void>;
 }): Action => {
     const [state, setState] = useState<State>({ type: 'LOADING' });
 
     useEffect(() => {
-        actionPromise
+        asyncAction()
             .then(() => setState({ type: 'COMPLETE' }))
             .catch((e: Error) => {
                 setState({ type: 'ERROR', error: e });
             });
-    }, [actionPromise]);
+    }, [asyncAction]);
 
     if (state.type === 'ERROR') {
         return {

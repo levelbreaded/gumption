@@ -36,14 +36,13 @@ const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
     const branchName = safeBranchNameFromCommitMessage(message);
 
     const performAction = useCallback(async () => {
-        console.log({ message, branchName });
-        // await git.createBranch({ branchName });
-        // await git.addAllFiles();
-        // await git.commit({ message });
+        await git.createBranch({ branchName });
+        await git.addAllFiles();
+        await git.commit({ message });
     }, [branchName]);
 
     const action = useAction({
-        actionPromise: performAction(),
+        asyncAction: performAction,
     });
 
     return {

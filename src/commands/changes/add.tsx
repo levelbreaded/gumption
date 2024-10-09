@@ -1,5 +1,5 @@
 import ErrorDisplay from '../../components/error-display.js';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Action, useAction } from '../../hooks/use-action.js';
 import { CommandConfig, CommandProps } from '../../types.js';
 import { Text } from 'ink';
@@ -26,8 +26,12 @@ function ChangedAdd({}: CommandProps) {
 const useChangesAdd = (): Action => {
     const git = useGit();
 
+    const performAction = useCallback(async () => {
+        await git.addAllFiles();
+    }, [git]);
+
     return useAction({
-        actionPromise: git.addAllFiles(),
+        asyncAction: performAction,
     });
 };
 
