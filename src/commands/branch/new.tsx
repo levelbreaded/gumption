@@ -53,6 +53,8 @@ const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
     } as UseBranchNewAction;
 };
 
+
+
 export const branchNewConfig: CommandConfig = {
     description:
         'Create a new branch, switch to it, and commit all current changes to it',
