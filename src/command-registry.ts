@@ -1,3 +1,4 @@
+import BranchNew, { branchNewConfig } from './commands/branch/new.js';
 import ChangesAdd, { changesAddConfig } from './commands/changes/add.js';
 import ChangesCommit, {
     changesCommitConfig,
@@ -37,6 +38,17 @@ export const REGISTERED_COMMANDS: CommandGroup = {
         commit: {
             component: ChangesCommit,
             config: changesCommitConfig,
+        },
+    } as CommandGroup,
+    branch: {
+        _group: {
+            alias: 'b',
+            name: 'branch',
+            description: 'Commands related to branch management',
+        },
+        new: {
+            component: BranchNew,
+            config: branchNewConfig,
         },
     } as CommandGroup,
 } as const;
