@@ -37,6 +37,7 @@ const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
 
     const performAction = useCallback(async () => {
         await git.createBranch({ branchName });
+        await git.checkout(branchName);
         await git.addAllFiles();
         await git.commit({ message });
     }, [branchName]);
@@ -52,8 +53,6 @@ const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
         branchName,
     } as UseBranchNewAction;
 };
-
-
 
 export const branchNewConfig: CommandConfig = {
     description:
