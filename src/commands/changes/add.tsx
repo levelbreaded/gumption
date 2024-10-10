@@ -40,6 +40,12 @@ export const changesAddConfig: CommandConfig = {
     usage: 'changes add',
     key: 'add',
     aliases: ['a'],
+    getProps: () => {
+        return {
+            valid: true,
+            props: null,
+        };
+    },
 };
 
 export default ChangedAdd;

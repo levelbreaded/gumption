@@ -1,15 +1,23 @@
 import ErrorDisplay from '../../components/error-display.js';
 import React, { useCallback } from 'react';
 import { Action, useAction } from '../../hooks/use-action.js';
-import { CommandConfig, CommandProps } from '../../types.js';
+import {
+    CommandConfig,
+    CommandProps,
+    PropSanitationResult,
+    Valid,
+} from '../../types.js';
 import { Text } from 'ink';
 import { safeBranchNameFromCommitMessage } from '../../utils/naming.js';
 import { useGit } from '../../hooks/use-git.js';
 
-function BranchNew({ input }: CommandProps) {
-    const [, , message] = input;
-    // todo: refactor to a sanitize input pattern
-    const result = useBranchNew({ message: message! });
+function BranchNew(props: CommandProps) {
+    const args = branchNewConfig.getProps(props) as Valid<
+        PropSanitationResult<CommandArgs>
+    >;
+    const { commitMessage } = args.props;
+
+    const result = useBranchNew({ message: commitMessage });
 
     if (result.isError) {
         return <ErrorDisplay error={result.error} />;
@@ -54,13 +62,17 @@ const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
     } as UseBranchNewAction;
 };
 
-export const branchNewConfig: CommandConfig = {
+interface CommandArgs {
+    commitMessage: string;
+}
+
+export const branchNewConfig: CommandConfig<CommandArgs> = {
     description:
         'Create a new branch, switch to it, and commit all current changes to it',
     usage: 'branch new "<message>"',
     key: 'new',
     aliases: ['n'],
-    validateProps: (props) => {
+    getProps: (props) => {
         const { input } = props;
         const [, , message] = input;
 
@@ -70,7 +82,12 @@ export const branchNewConfig: CommandConfig = {
                 errors: ['Please provide a commit message'],
             };
 
-        return { valid: true };
+        return {
+            valid: true,
+            props: {
+                commitMessage: message,
+            },
+        };
     },
 };
 

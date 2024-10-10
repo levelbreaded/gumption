@@ -4,21 +4,26 @@ import {
     CommandConfig,
     CommandGroup,
     CommandProps,
+    PropSanitationResult,
+    Valid,
     isCommand,
     isCommandGroup,
 } from '../types.js';
 import { REGISTERED_COMMANDS } from '../command-registry.js';
 import { findCommand, findCommandGroup } from '../utils/commands.js';
 
-function Help({ input }: CommandProps) {
-    const nonCommandInputs = input.filter((_) => _ !== helpConfig.key);
+function Help(props: CommandProps) {
+    const args = helpConfig.getProps(props) as Valid<
+        PropSanitationResult<CommandArgs>
+    >;
+    const { commandAccessor } = args.props;
 
-    if (nonCommandInputs.length === 0 || !nonCommandInputs?.[0]) {
+    if (!commandAccessor) {
         return <CommandList title={'Help'} group={REGISTERED_COMMANDS} />;
     }
 
     const commandGroup = findCommandGroup({
-        accessor: nonCommandInputs,
+        accessor: commandAccessor,
         matchAliases: false,
     });
 
@@ -32,7 +37,7 @@ function Help({ input }: CommandProps) {
     }
 
     const command = findCommand({
-        accessor: nonCommandInputs,
+        accessor: commandAccessor,
         matchAliases: false,
     });
 
@@ -81,11 +86,28 @@ const CommandList = ({
     );
 };
 
-export const helpConfig: CommandConfig = {
+interface CommandArgs {
+    commandAccessor?: string[];
+}
+
+export const helpConfig: CommandConfig<CommandArgs> = {
     description:
         'Get help on a specific command or list all available commands',
     usage: 'help | help <COMMAND>',
     key: 'help',
+    getProps: ({ input }) => {
+        const [, ..._commandAccessor]: Array<string> = input;
+        const commandAccessor = _commandAccessor.length
+            ? _commandAccessor
+            : undefined;
+
+        return {
+            valid: true,
+            props: {
+                commandAccessor,
+            },
+        };
+    },
 };
 
 export default Help;

@@ -3,10 +3,20 @@ import GumptionItemComponent from '../components/gumption-item-component.js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import SelectInput from 'ink-select-input';
 import { Box, Text } from 'ink';
-import { CommandConfig, CommandProps } from '../types.js';
+import {
+    CommandConfig,
+    CommandProps,
+    PropSanitationResult,
+    Valid,
+} from '../types.js';
 import { useGit } from '../hooks/use-git.js';
 
-function Hop({ input }: CommandProps) {
+function Hop(props: CommandProps) {
+    const args = hopConfig.getProps(props) as Valid<
+        PropSanitationResult<CommandArgs>
+    >;
+    const { searchTerm } = args.props;
+
     const git = useGit();
     const [allBranches, setAllBranches] = useState<string[]>([]);
     const [currentBranch, setCurrentBranch] = useState<string | undefined>(
@@ -14,8 +24,6 @@ function Hop({ input }: CommandProps) {
     );
     const [newBranch, setNewBranch] = useState<string | undefined>(undefined);
     const [error, setError] = useState<Error | undefined>(undefined);
-
-    const [, searchTerm]: Array<string | undefined> = input;
 
     useEffect(() => {
         if (currentBranch) return;
@@ -109,11 +117,25 @@ function Hop({ input }: CommandProps) {
     );
 }
 
-export const hopConfig: CommandConfig = {
+interface CommandArgs {
+    searchTerm?: string;
+}
+
+export const hopConfig: CommandConfig<CommandArgs> = {
     description: 'Hop to other branches',
     usage: 'hop | hop <SEARCH_TERM>',
     key: 'hop',
     aliases: ['h'],
+    getProps: ({ input }) => {
+        const [, searchTerm]: Array<string | undefined> = input;
+
+        return {
+            valid: true,
+            props: {
+                searchTerm,
+            },
+        };
+    },
 };
 
 export default Hop;
