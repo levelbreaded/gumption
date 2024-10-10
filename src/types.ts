@@ -1,22 +1,28 @@
 import { ComponentType } from 'react';
 import { Result } from 'meow';
 
-export type ValidateProps<T extends Record<string, unknown>> = (
-    props: T
-) => PropValidationResult;
+export type SanitizeProps<
+    T extends Record<string, unknown>,
+    K extends object = any,
+> = (props: T) => PropSanitationResult<K>;
 
-export type PropValidationResult =
+export type PropSanitationResult<K extends object = any> =
     | {
           valid: true;
+          props: K;
       }
     | { valid: false; errors: string[] };
+
+export type Valid<T extends PropSanitationResult> = T extends { valid: true }
+    ? T
+    : never;
 
 export interface CommandProps extends Record<string, unknown> {
     cli: Pick<Result<any>, 'flags' | 'unnormalizedFlags'>;
     input: string[];
 }
 
-export interface CommandConfig {
+export interface CommandConfig<K extends object = any> {
     description: string;
     usage: string;
 
@@ -34,7 +40,7 @@ export interface CommandConfig {
      * Note that "gum group t" and "gum g test" would also work.
      */
     aliases?: string[];
-    validateProps?: ValidateProps<CommandProps>;
+    getProps: SanitizeProps<CommandProps, K>;
 }
 
 export interface Command {

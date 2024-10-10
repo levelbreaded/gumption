@@ -11,6 +11,12 @@ export const syncConfig: CommandConfig = {
     description: 'Sync your local changes with the remote server',
     usage: 'sync',
     key: 'sync',
+    getProps: () => {
+        return {
+            valid: true,
+            props: null,
+        };
+    },
 };
 
 export default Sync;
