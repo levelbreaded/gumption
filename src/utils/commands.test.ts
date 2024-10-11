@@ -1,10 +1,18 @@
 import { Command, CommandGroup, isCommand, isCommandGroup } from '../types.js';
 import { REGISTERED_COMMANDS } from '../command-registry.js';
 import { describe, expect, it, vi } from 'vitest';
-import { findCommand, findCommandGroup, getAllAccessors } from './commands.js';
+import {
+    findCommand,
+    findCommandGroup,
+    getAllAccessors,
+    getCli,
+} from './commands.js';
 
 vi.mock('../command-registry.js', () => {
     return {
+        TOP_LEVEL_ALIASES: {
+            tla: ['group', 'innerGroup', 'test3'],
+        },
         REGISTERED_COMMANDS: {
             test: {
                 component: null,
@@ -332,6 +340,48 @@ describe('findCommandGroup is working normally', () => {
                 accessor: ['group', 'innerGroup', 'test3'],
             })
         ).to.equal(undefined);
+    });
+});
+
+describe('getCli is working normally', () => {
+    it('replaces top level aliases', () => {
+        const cli = getCli({
+            input: ['tla'],
+            flags: {},
+            unnormalizedFlags: {},
+        });
+
+        expect(cli.input).to.deep.equal(['group', 'innerGroup', 'test3']);
+    });
+
+    it('replaces leaves the rest of the input untouched after replacing top level aliases', () => {
+        const cli = getCli({
+            input: ['tla', 'some message variable', 'another variable'],
+            flags: {
+                m: 'message',
+                a: true,
+            },
+            unnormalizedFlags: {
+                idk: 'something',
+            },
+        });
+
+        expect(cli.input).to.deep.equal([
+            'group',
+            'innerGroup',
+            'test3',
+            'some message variable',
+            'another variable',
+        ]);
+
+        expect(cli.flags).to.deep.equal({
+            m: 'message',
+            a: true,
+        });
+
+        expect(cli.unnormalizedFlags).to.deep.equal({
+            idk: 'something',
+        });
     });
 });
 

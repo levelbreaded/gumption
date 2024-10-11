@@ -1,17 +1,21 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import { type Result } from 'meow';
-import { findCommand } from './utils/commands.js';
+import { findCommand, getCli } from './utils/commands.js';
 
 type Props = {
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     readonly cli: Result<any>;
 };
 
-export default function App({ cli }: Props) {
+export default function App({ cli: _cli }: Props) {
+    const cli = getCli(_cli);
+
     const sanitizedInput =
         cli.input.length === 0
             ? ['help']
             : cli.input.map((_) => _.toLowerCase());
+
     const command = findCommand({ accessor: sanitizedInput });
 
     if (!command) {

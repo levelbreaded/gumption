@@ -52,3 +52,10 @@ export const REGISTERED_COMMANDS: CommandGroup = {
         },
     } as CommandGroup,
 } as const;
+
+export const TOP_LEVEL_ALIASES = {
+    cc: ['changes', 'commit'],
+    bn: ['branch', 'new'],
+} satisfies Record<string, string[]>;
+
+export type TopLevelAliasKey = keyof typeof TOP_LEVEL_ALIASES;
