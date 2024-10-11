@@ -46,7 +46,6 @@ vi.mock('../../services/git.js', () => {
 });
 
 const LOADING_MESSAGE = 'Loading...';
-const SUCCESS_MESSAGE = 'Committed all changes';
 
 describe('correctly renders changes commit UI', () => {
     it('runs as intended', async () => {

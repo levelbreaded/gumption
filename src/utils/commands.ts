@@ -1,13 +1,25 @@
 import { Command, CommandGroup, isCommand, isCommandGroup } from '../types.js';
-import { REGISTERED_COMMANDS } from '../command-registry.js';
+import {
+    REGISTERED_COMMANDS,
+    TOP_LEVEL_ALIASES,
+    TopLevelAliasKey,
+} from '../command-registry.js';
+import { Result } from 'meow';
 
 export const findCommand = ({
-    accessor,
+    accessor: _accessor,
     matchAliases = true,
 }: {
     accessor: string[];
     matchAliases?: boolean;
 }): Command | undefined => {
+    let accessor: string[] = _accessor;
+
+    // top level aliases will always be the first input if included
+    if (_accessor.length && _accessor[0] && _accessor[0] in TOP_LEVEL_ALIASES) {
+        accessor = TOP_LEVEL_ALIASES[_accessor[0] as TopLevelAliasKey];
+    }
+
     return _findCommandInGroup({
         group: REGISTERED_COMMANDS,
         accessor,
@@ -163,4 +175,26 @@ export const getAllAccessors = (
         }
     });
     return accessors;
+};
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+type GumCliResult = Pick<Result<any>, 'input' | 'flags' | 'unnormalizedFlags'>;
+export const getCli = ({
+    input: _input,
+    ...cli
+}: GumCliResult): GumCliResult => {
+    let input = _input;
+
+    if (_input.length && _input[0] && _input[0] in TOP_LEVEL_ALIASES) {
+        const actualAccessor = TOP_LEVEL_ALIASES[_input[0] as TopLevelAliasKey];
+        // sloppy copy of array so .splice doesn't modify the input array
+        const _inputCopy = _input.slice();
+        _inputCopy.splice(0, 1, ...actualAccessor);
+        input = _inputCopy;
+    }
+
+    return {
+        ...cli,
+        input,
+    };
 };

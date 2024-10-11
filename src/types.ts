@@ -3,9 +3,11 @@ import { Result } from 'meow';
 
 export type SanitizeProps<
     T extends Record<string, unknown>,
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     K extends object = any,
 > = (props: T) => PropSanitationResult<K>;
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export type PropSanitationResult<K extends object = any> =
     | {
           valid: true;
@@ -18,10 +20,12 @@ export type Valid<T extends PropSanitationResult> = T extends { valid: true }
     : never;
 
 export interface CommandProps extends Record<string, unknown> {
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     cli: Pick<Result<any>, 'flags' | 'unnormalizedFlags'>;
     input: string[];
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export interface CommandConfig<K extends object = any> {
     description: string;
     usage: string;
