@@ -5,7 +5,7 @@ import SelectInput from 'ink-select-input';
 import { KEYS } from '../utils/test-helpers.js';
 import { delay } from '../utils/time.js';
 import { describe, expect, it, vi } from 'vitest';
-import { render } from '@levelbreaded/ink-testing-library';
+import { render } from 'ink-testing-library';
 
 const mocks = vi.hoisted(() => {
     return {
