@@ -5,7 +5,7 @@ import { delay } from '../../utils/time.js';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from '@levelbreaded/ink-testing-library';
 
-const ARBITRARY_DELAY = 250; // ms
+const ARBITRARY_DELAY = 120; // ms
 
 const mocks = vi.hoisted(() => {
     return {

@@ -1,9 +1,10 @@
-import ChangesAdd from './add.js';
+import BranchNew from './new.js';
 import React from 'react';
 import { Text } from 'ink';
 import { delay } from '../../utils/time.js';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from '@levelbreaded/ink-testing-library';
+import { safeBranchNameFromCommitMessage } from '../../utils/naming.js';
 
 const ARBITRARY_DELAY = 120; // ms
 
@@ -11,9 +12,25 @@ const mocks = vi.hoisted(() => {
     return {
         createGitService: vi.fn(({}) => {
             return {
+                checkout: async () => {
+                    return new Promise((resolve) =>
+                        setTimeout(resolve, ARBITRARY_DELAY / 4)
+                    );
+                },
+                createBranch: async () => {
+                    return new Promise((resolve) =>
+                        setTimeout(resolve, ARBITRARY_DELAY / 4)
+                    );
+                },
                 addAllFiles: async () => {
                     return new Promise((resolve) =>
-                        setTimeout(resolve, ARBITRARY_DELAY)
+                        setTimeout(resolve, ARBITRARY_DELAY / 4)
+                    );
+                },
+                commit: async ({ message }: { message: string }) => {
+                    console.log(message);
+                    return new Promise((resolve) =>
+                        setTimeout(resolve, ARBITRARY_DELAY / 4)
                     );
                 },
             };
@@ -29,34 +46,36 @@ vi.mock('../../services/git.js', () => {
 });
 
 const LOADING_MESSAGE = 'Loading...';
-const SUCCESS_MESSAGE = 'Staged all changes';
+const SUCCESS_MESSAGE = 'Committed all changes';
 
-describe('correctly renders changes add UI', () => {
+describe('correctly renders changes commit UI', () => {
     it('runs as intended', async () => {
         const actual1 = render(
-            <ChangesAdd
+            <BranchNew
                 cli={{
                     flags: {},
                     unnormalizedFlags: {},
                 }}
-                input={['changes', 'add']}
+                input={['branch', 'new', 'commit message']}
             />
         );
 
         const actual2 = render(
-            <ChangesAdd
+            <BranchNew
                 cli={{
                     flags: {},
                     unnormalizedFlags: {},
                 }}
-                input={['changes', 'a']}
+                input={['branch', 'n', 'commit message']}
             />
         );
+
+        const newBranchName = safeBranchNameFromCommitMessage('commit message');
 
         const ExpectedComp = () => {
             return (
                 <Text bold color="green">
-                    {SUCCESS_MESSAGE}
+                    New branch created - {newBranchName}
                 </Text>
             );
         };
@@ -69,22 +88,22 @@ describe('correctly renders changes add UI', () => {
 
     it('displays a loading state while processing', async () => {
         const actual1 = render(
-            <ChangesAdd
+            <BranchNew
                 cli={{
                     flags: {},
                     unnormalizedFlags: {},
                 }}
-                input={['changes', 'add']}
+                input={['branch', 'new', 'commit message']}
             />
         );
 
         const actual2 = render(
-            <ChangesAdd
+            <BranchNew
                 cli={{
                     flags: {},
                     unnormalizedFlags: {},
                 }}
-                input={['changes', 'a']}
+                input={['branch', 'n', 'commit message']}
             />
         );
 
