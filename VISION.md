@@ -73,10 +73,10 @@ branches are stacked on which branches.
 
 ## Plan
 
-1. Polish `branch hop`
-2. Build `changes add`
-3. Build `changes commit`
-4. Build `branch new`
+1. Polish `branch hop` ✅
+2. Build `changes add` ✅
+3. Build `changes commit` 🟠
+4. Build `branch new` 🟠
 
 This is now v0.
 
@@ -85,7 +85,7 @@ This is now v0.
 
 This is now v0.1.X
 
-7. Build tree representation.
+7. Build tree representation. ✅
 8. Build `track`
 9. Build `ls`
 10. Build `up` & `down`
