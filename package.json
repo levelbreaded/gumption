@@ -28,7 +28,7 @@
         "simple-git": "^3.24.0"
     },
     "devDependencies": {
-        "@levelbreaded/ink-testing-library": "^3.1.0",
+        "ink-testing-library": "^4.0.0",
         "@sindresorhus/tsconfig": "^3.0.1",
         "@types/node": "^20.12.8",
         "@types/react": "^18.0.32",

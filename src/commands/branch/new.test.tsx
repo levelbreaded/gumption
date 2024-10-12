@@ -3,7 +3,7 @@ import React from 'react';
 import { Text } from 'ink';
 import { delay } from '../../utils/time.js';
 import { describe, expect, it, vi } from 'vitest';
-import { render } from '@levelbreaded/ink-testing-library';
+import { render } from 'ink-testing-library';
 import { safeBranchNameFromCommitMessage } from '../../utils/naming.js';
 
 const ARBITRARY_DELAY = 120; // ms
