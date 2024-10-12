@@ -21,6 +21,7 @@
         "dist"
     ],
     "dependencies": {
+        "env-paths": "^3.0.0",
         "ink": "^4.1.0",
         "ink-select-input": "^5.0.0",
         "meow": "^11.0.0",
@@ -28,7 +29,6 @@
         "simple-git": "^3.24.0"
     },
     "devDependencies": {
-        "ink-testing-library": "^4.0.0",
         "@sindresorhus/tsconfig": "^3.0.1",
         "@types/node": "^20.12.8",
         "@types/react": "^18.0.32",
@@ -37,6 +37,7 @@
         "eslint-config-prettier": "^9.0.0",
         "eslint-plugin-prettier": "^5.0.0",
         "eslint-plugin-sort-imports-es6-autofix": "^0.6.0",
+        "ink-testing-library": "^4.0.0",
         "prettier": "^3.0.3",
         "ts-node": "^10.9.1",
         "typescript": "^5.0.3",
