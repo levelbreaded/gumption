@@ -45,6 +45,7 @@ const moveOnto = (
     },
     deps: { storeService: StoreService }
 ) => {
+    // todo: validate they cant be the same branch
     const tree = _readTree(deps);
 
     const parentBranch = _findParent({ parent, tree });
