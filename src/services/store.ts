@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 
 type JSONPrimitive = string | number | boolean | null | undefined;
 
-type JSONValue =
+export type JSONValue =
     | JSONPrimitive
     | JSONValue[]
     | {
@@ -42,9 +42,11 @@ export interface StoreService {
     write: (data: JSONValue) => void;
     read: () => JSONValue;
 }
+
 export interface ServiceConfig {
     filename: string;
 }
+
 export const createStoreService = (config: ServiceConfig): StoreService => {
     return {
         write: (data: JSONValue) => {
