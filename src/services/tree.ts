@@ -45,8 +45,11 @@ const moveOnto = (
     },
     deps: { storeService: StoreService }
 ) => {
-    // todo: validate they cant be the same branch
     const tree = _readTree(deps);
+
+    if (branch === parent) {
+        throw Error('Cannot move a branch onto itself.');
+    }
 
     const parentBranch = _findParent({ parent, tree });
     const targetBranch = _findBranch({ branch, tree });
@@ -66,7 +69,7 @@ const removeBranch = (
 
     const root = _getRoot({ tree });
     if (root.key === branchToRemove.key) {
-        throw Error('Nah, imma do my own thing');
+        throw Error('Cannot remove root branch');
     }
 
     _saveTree(
@@ -87,10 +90,23 @@ const _createBranchNode = ({
     parent: string | null;
 }): BranchNode => {
     if (parent === null && tree.length) {
-        throw Error('Uhhhh');
+        throw Error(
+            'Tree already has a root branch. Only the root branch can have no parent.'
+        );
     }
 
-    // todo: good validation? 😳also cleanup
+    if (branch === parent) {
+        throw Error('Branch cannot be the same as parent.');
+    }
+
+    if (parent && !tree.find((n) => n.key === parent)) {
+        throw Error('Parent branch does not exist in tree.');
+    }
+
+    if (tree.find((n) => n.key === branch)) {
+        throw Error('Branch already exists in tree.');
+    }
+
     return {
         key: branch,
         parent,
@@ -125,8 +141,15 @@ const _readTree = (deps: { storeService: StoreService }) => {
     const data = storeService.read();
 
     if (typeof data !== 'object') return [];
+    if (!Array.isArray(data)) return [];
 
-    // todo: validation is for nerds
+    const isValidTree = data.every((el) => {
+        return el && el.hasOwnProperty('key') && el.hasOwnProperty('parent');
+    });
+    if (!isValidTree) {
+        return [];
+    }
+
     return data as Tree;
 };
 
@@ -144,7 +167,7 @@ const _findParent = ({
             break;
         case 'symbol':
             if (parent !== ROOT) {
-                throw Error('Only the root can be accessed by symbol.');
+                throw Error('Only the root branch can be accessed by symbol.');
             }
             parentBranch = _getRoot({ tree });
             break;
@@ -164,7 +187,7 @@ export interface TreeService {
     ROOT: symbol;
 }
 
-export const ROOT = Symbol.for('ROOT');
+const ROOT = Symbol.for('ROOT');
 
 export const createTreeService = (): TreeService => {
     const storeService = createStoreService({ filename: FILENAME });
