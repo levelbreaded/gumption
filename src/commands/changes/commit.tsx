@@ -7,21 +7,34 @@ import {
     PropSanitationResult,
     Valid,
 } from '../../types.js';
+import { Loading } from '../../components/loading.js';
+import { SelectRootBranch } from '../../components/select-root-branch.js';
 import { Text } from 'ink';
 import { useGit } from '../../hooks/use-git.js';
+import { useTree } from '../../hooks/use-tree.js';
 
 function ChangesCommit(props: CommandProps) {
     const args = changesCommitConfig.getProps(props) as Valid<
         PropSanitationResult<CommandArgs>
     >;
-    const result = useChangesCommit({ message: args.props.message });
+
+    const { rootBranchName } = useTree();
+
+    const result = useChangesCommit({
+        message: args.props.message,
+        enabled: Boolean(rootBranchName),
+    });
+
+    if (!result.isEnabled) {
+        return <SelectRootBranch />;
+    }
 
     if (result.isError) {
         return <ErrorDisplay error={result.error} />;
     }
 
     if (result.isLoading) {
-        return <Text color="cyan">Loading...</Text>;
+        return <Loading />;
     }
 
     return (
@@ -31,7 +44,13 @@ function ChangesCommit(props: CommandProps) {
     );
 }
 
-const useChangesCommit = ({ message }: { message: string }): Action => {
+const useChangesCommit = ({
+    message,
+    enabled,
+}: {
+    message: string;
+    enabled: boolean;
+}): Action => {
     const git = useGit();
 
     const performAction = useCallback(async () => {
@@ -41,6 +60,7 @@ const useChangesCommit = ({ message }: { message: string }): Action => {
 
     return useAction({
         asyncAction: performAction,
+        enabled,
     });
 };
 

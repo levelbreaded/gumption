@@ -1,6 +1,12 @@
 import envPaths from 'env-paths';
 import path from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { isDev } from '../utils/dev.js';
+
+// Recreate __dirname for ES Modules - from copilot
+const __filename = fileURLToPath(import.meta.url).replace('/dist', '');
+const projectRootDir = path.resolve(path.dirname(__filename), '..');
 
 type JSONPrimitive = string | number | boolean | null | undefined;
 
@@ -14,12 +20,16 @@ export type JSONValue =
 interface PreflightResult {
     filepath: string;
 }
+
 const preflight = (config: ServiceConfig): PreflightResult => {
     const paths = envPaths('gumption', { suffix: 'cli' });
-    const dataFilePath = path.join(paths.data, config.filename);
+    const dir = isDev ? path.join(projectRootDir, '.local-config') : paths.data;
+    const dataFilePath = path.join(dir, config.filename);
+
+    console.log({ dir });
 
     if (!existsSync(dataFilePath)) {
-        mkdirSync(paths.data, { recursive: true });
+        mkdirSync(dir, { recursive: true });
     }
 
     return {
@@ -34,7 +44,10 @@ const write = (data: JSONValue, config: ServiceConfig) => {
 
 const read = (config: ServiceConfig): JSONValue => {
     const { filepath } = preflight(config);
+    if (!existsSync(filepath)) return {};
+
     const fileData = readFileSync(filepath, 'utf-8');
+    if (fileData === '') return {};
     return JSON.parse(fileData) as JSONValue;
 };
 

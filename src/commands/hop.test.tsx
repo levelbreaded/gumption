@@ -2,7 +2,7 @@ import GumptionItemComponent from '../components/gumption-item-component.js';
 import Hop from './hop.js';
 import React from 'react';
 import SelectInput from 'ink-select-input';
-import { KEYS } from '../utils/test-helpers.js';
+import { KEYS, mockStoreService } from '../utils/test-helpers.js';
 import { delay } from '../utils/time.js';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'ink-testing-library';
@@ -27,6 +27,11 @@ vi.mock('../services/git.js', () => {
         DEFAULT_OPTIONS: {},
         createGitService: mocks.createGitService,
     };
+});
+
+vi.mock('../services/store.js', async () => {
+    const { mockStoreService } = await import('../utils/test-helpers.js');
+    return mockStoreService({ rootInitialized: false });
 });
 
 describe('correctly renders hop UI', () => {
