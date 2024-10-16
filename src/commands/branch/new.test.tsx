@@ -1,5 +1,6 @@
 import BranchNew from './new.js';
 import React from 'react';
+import { Loading } from '../../components/loading.js';
 import { Text } from 'ink';
 import { delay } from '../../utils/time.js';
 import { describe, expect, it, vi } from 'vitest';
@@ -45,7 +46,10 @@ vi.mock('../../services/git.js', () => {
     };
 });
 
-const LOADING_MESSAGE = 'Loading...';
+vi.mock('../../services/store.js', async () => {
+    const { mockStoreService } = await import('../../utils/test-helpers.js');
+    return mockStoreService({ rootInitialized: true });
+});
 
 describe('correctly renders changes commit UI', () => {
     it('runs as intended', async () => {
@@ -73,8 +77,8 @@ describe('correctly renders changes commit UI', () => {
 
         const ExpectedComp = () => {
             return (
-                <Text bold color="green">
-                    New branch created - {newBranchName}
+                <Text color="green">
+                    New branch created - <Text bold>{newBranchName}</Text>
                 </Text>
             );
         };
@@ -106,10 +110,7 @@ describe('correctly renders changes commit UI', () => {
             />
         );
 
-        const ExpectedComp = () => {
-            return <Text color="cyan">{LOADING_MESSAGE}</Text>;
-        };
-        const expected = render(<ExpectedComp />);
+        const expected = render(<Loading />);
 
         await delay(ARBITRARY_DELAY / 2);
         expect(actual1.lastFrame()).to.equal(expected.lastFrame());

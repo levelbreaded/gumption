@@ -1,14 +1,19 @@
 import { StoreService, createStoreService } from './store.js';
 
-const FILENAME = 'config.json';
+const FILENAME = 'branches.json';
 
 type BranchNode = { key: string; parent: string | null };
-type Tree = BranchNode[];
+export type Tree = BranchNode[];
 
 type ParentBranch = string | symbol;
+type SetTreeFunction = (tree: Tree) => void;
 
-const registerRoot = (branch: string, deps: { storeService: StoreService }) => {
+const registerRoot = (
+    branch: string,
+    deps: { storeService: StoreService; setCurrentTree: SetTreeFunction }
+) => {
     _saveTree([_createBranchNode({ tree: [], branch, parent: null })], deps);
+    deps.setCurrentTree(_readTree(deps));
 };
 
 const attachTo = (
@@ -19,7 +24,7 @@ const attachTo = (
         newBranch: string;
         parent: ParentBranch;
     },
-    deps: { storeService: StoreService }
+    deps: { storeService: StoreService; setCurrentTree: SetTreeFunction }
 ) => {
     const tree = _readTree(deps);
     const parentBranch = _findParent({ parent, tree });
@@ -33,6 +38,7 @@ const attachTo = (
     ];
 
     _saveTree(newTree, deps);
+    deps.setCurrentTree(_readTree(deps));
 };
 
 const moveOnto = (
@@ -43,7 +49,7 @@ const moveOnto = (
         branch: string;
         parent: ParentBranch;
     },
-    deps: { storeService: StoreService }
+    deps: { storeService: StoreService; setCurrentTree: SetTreeFunction }
 ) => {
     const tree = _readTree(deps);
 
@@ -56,11 +62,12 @@ const moveOnto = (
 
     targetBranch.parent = parentBranch.key;
     _saveTree(tree, deps);
+    deps.setCurrentTree(_readTree(deps));
 };
 
 const removeBranch = (
     branch: string,
-    deps: { storeService: StoreService }
+    deps: { storeService: StoreService; setCurrentTree: SetTreeFunction }
 ): BranchNode | undefined => {
     const tree = _readTree(deps);
     const branchToRemove = _findBranch({ branch, tree });
@@ -77,6 +84,7 @@ const removeBranch = (
         deps
     );
 
+    deps.setCurrentTree(_readTree(deps));
     return branchToRemove;
 };
 
@@ -136,7 +144,10 @@ const _saveTree = (tree: Tree, deps: { storeService: StoreService }) => {
     storeService.write(tree);
 };
 
-const _readTree = (deps: { storeService: StoreService }) => {
+const _readTree = (deps: {
+    storeService: StoreService;
+    setCurrentTree: SetTreeFunction;
+}) => {
     const { storeService } = deps;
     const data = storeService.read();
 
@@ -150,6 +161,7 @@ const _readTree = (deps: { storeService: StoreService }) => {
         return [];
     }
 
+    deps.setCurrentTree(data as Tree);
     return data as Tree;
 };
 
@@ -178,6 +190,10 @@ const _findParent = ({
     return parentBranch;
 };
 
+export interface TreeServiceConfig {
+    setCurrentTree?: SetTreeFunction;
+}
+
 export interface TreeService {
     registerRoot: (branch: string) => void;
     attachTo: (args: { newBranch: string; parent: string }) => void;
@@ -189,25 +205,35 @@ export interface TreeService {
 
 const ROOT = Symbol.for('ROOT');
 
-export const createTreeService = (): TreeService => {
+export const createTreeService = (config?: TreeServiceConfig): TreeService => {
     const storeService = createStoreService({ filename: FILENAME });
 
-    return {
+    const setCurrentTree = config?.setCurrentTree
+        ? config.setCurrentTree
+        : (_: Tree) => {};
+
+    const service = {
         registerRoot: (branch) => {
-            return registerRoot(branch, { storeService });
+            return registerRoot(branch, { storeService, setCurrentTree });
         },
         attachTo: (args) => {
-            return attachTo(args, { storeService });
+            return attachTo(args, { storeService, setCurrentTree });
         },
         moveOnto: (args) => {
-            return moveOnto(args, { storeService });
+            return moveOnto(args, { storeService, setCurrentTree });
         },
         removeBranch: (branch) => {
-            return removeBranch(branch, { storeService });
+            return removeBranch(branch, { storeService, setCurrentTree });
         },
         get: () => {
-            return _readTree({ storeService });
+            return _readTree({ storeService, setCurrentTree });
         },
         ROOT,
+    } as Omit<TreeService, 'currentTree'>;
+
+    setCurrentTree(service.get());
+
+    return {
+        ...service,
     };
 };

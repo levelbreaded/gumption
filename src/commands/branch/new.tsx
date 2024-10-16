@@ -1,5 +1,5 @@
 import ErrorDisplay from '../../components/error-display.js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Action, useAction } from '../../hooks/use-action.js';
 import {
     CommandConfig,
@@ -7,9 +7,12 @@ import {
     PropSanitationResult,
     Valid,
 } from '../../types.js';
+import { Loading } from '../../components/loading.js';
+import { SelectRootBranch } from '../../components/select-root-branch.js';
 import { Text } from 'ink';
 import { safeBranchNameFromCommitMessage } from '../../utils/naming.js';
 import { useGit } from '../../hooks/use-git.js';
+import { useTree } from '../../hooks/use-tree.js';
 
 function BranchNew(props: CommandProps) {
     const args = branchNewConfig.getProps(props) as Valid<
@@ -17,19 +20,28 @@ function BranchNew(props: CommandProps) {
     >;
     const { commitMessage } = args.props;
 
-    const result = useBranchNew({ message: commitMessage });
+    const { rootBranchName } = useTree();
+
+    const result = useBranchNew({
+        message: commitMessage,
+        enabled: Boolean(rootBranchName),
+    });
+
+    if (!result.isEnabled) {
+        return <SelectRootBranch />;
+    }
 
     if (result.isError) {
         return <ErrorDisplay error={result.error} />;
     }
 
     if (result.isLoading) {
-        return <Text color="cyan">Loading...</Text>;
+        return <Loading />;
     }
 
     return (
-        <Text bold color="green">
-            New branch created - {result.branchName}
+        <Text color="green">
+            New branch created - <Text bold>{result.branchName}</Text>
         </Text>
     );
 }
@@ -38,7 +50,13 @@ type UseBranchNewAction = Action & {
     branchName: string;
 };
 
-const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
+const useBranchNew = ({
+    message,
+    enabled,
+}: {
+    message: string;
+    enabled: boolean;
+}): UseBranchNewAction => {
     const git = useGit();
 
     const branchName = safeBranchNameFromCommitMessage(message);
@@ -52,9 +70,11 @@ const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
 
     const action = useAction({
         asyncAction: performAction,
+        enabled,
     });
 
     return {
+        isEnabled: action.isEnabled,
         isLoading: action.isLoading,
         isError: action.isError,
         error: action.error,

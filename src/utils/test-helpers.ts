@@ -1,3 +1,6 @@
+import { JSONValue } from '../services/store.js';
+import { vi } from 'vitest';
+
 /**
  * Taken from https://github.com/milesj/boost/blob/master/packages/cli/tests/helpers.ts
  */
@@ -15,4 +18,26 @@ export const KEYS = {
     right: '\u001B[C',
     tab: '\t',
     up: '\u001B[A',
+};
+
+export const mockStoreService = ({
+    rootInitialized,
+}: {
+    rootInitialized: boolean;
+}) => {
+    let fileData = rootInitialized
+        ? '[{ "key": "root", "parent": null }]'
+        : '[]';
+    return {
+        createStoreService: vi.fn(({}) => {
+            return {
+                read: (): JSONValue => {
+                    return JSON.parse(fileData) as JSONValue;
+                },
+                write: (data: JSONValue) => {
+                    fileData = JSON.stringify(data);
+                },
+            };
+        }),
+    };
 };

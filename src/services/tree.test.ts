@@ -1,21 +1,9 @@
-import { JSONValue } from './store.js';
 import { createTreeService } from './tree.js';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('./store.js', () => {
-    let fileData = '';
-    return {
-        createStoreService: vi.fn(({}) => {
-            return {
-                read: (): JSONValue => {
-                    return JSON.parse(fileData) as JSONValue;
-                },
-                write: (data: JSONValue) => {
-                    fileData = JSON.stringify(data);
-                },
-            };
-        }),
-    };
+vi.mock('./store.js', async () => {
+    const { mockStoreService } = await import('../utils/test-helpers.js');
+    return mockStoreService({ rootInitialized: false });
 });
 
 describe('tree service is working', () => {

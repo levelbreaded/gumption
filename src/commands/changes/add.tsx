@@ -2,6 +2,7 @@ import ErrorDisplay from '../../components/error-display.js';
 import React, { useCallback } from 'react';
 import { Action, useAction } from '../../hooks/use-action.js';
 import { CommandConfig, CommandProps } from '../../types.js';
+import { Loading } from '../../components/loading.js';
 import { Text } from 'ink';
 import { useGit } from '../../hooks/use-git.js';
 
@@ -13,7 +14,7 @@ function ChangedAdd({}: CommandProps) {
     }
 
     if (result.isLoading) {
-        return <Text color="cyan">Loading...</Text>;
+        return <Loading />;
     }
 
     return (
