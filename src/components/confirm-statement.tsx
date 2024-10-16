@@ -55,7 +55,7 @@ export const ConfirmStatement = ({
             <Text>
                 {statement}
                 <Text>
-                    &nbsp;(
+                    &nbsp;[
                     <Text underline={intent.accept} bold={intent.accept}>
                         Y
                     </Text>
@@ -63,7 +63,7 @@ export const ConfirmStatement = ({
                     <Text underline={intent.deny} bold={intent.deny}>
                         n
                     </Text>
-                    )
+                    ]:
                 </Text>
             </Text>
             <Text>{userInput.length ? userInput : '_'}</Text>

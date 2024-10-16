@@ -26,8 +26,6 @@ const preflight = (config: ServiceConfig): PreflightResult => {
     const dir = isDev ? path.join(projectRootDir, '.local-config') : paths.data;
     const dataFilePath = path.join(dir, config.filename);
 
-    console.log({ dir });
-
     if (!existsSync(dataFilePath)) {
         mkdirSync(dir, { recursive: true });
     }
