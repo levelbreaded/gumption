@@ -12,15 +12,30 @@ const mocks = vi.hoisted(() => {
     return {
         createGitService: vi.fn(({}) => {
             return {
+                checkout: async () => {
+                    return new Promise((resolve) =>
+                        setTimeout(resolve, ARBITRARY_DELAY / 4)
+                    );
+                },
+                currentBranch: async () => {
+                    return new Promise((resolve) =>
+                        setTimeout(() => resolve('root'), ARBITRARY_DELAY / 4)
+                    );
+                },
+                createBranch: async () => {
+                    return new Promise((resolve) =>
+                        setTimeout(resolve, ARBITRARY_DELAY / 4)
+                    );
+                },
                 addAllFiles: async () => {
                     return new Promise((resolve) =>
-                        setTimeout(resolve, ARBITRARY_DELAY / 2)
+                        setTimeout(resolve, ARBITRARY_DELAY / 4)
                     );
                 },
                 commit: async ({ message }: { message: string }) => {
                     console.log(message);
                     return new Promise((resolve) =>
-                        setTimeout(resolve, ARBITRARY_DELAY / 2)
+                        setTimeout(resolve, ARBITRARY_DELAY / 4)
                     );
                 },
             };
@@ -101,7 +116,7 @@ describe('correctly renders changes commit UI', () => {
 
         const expected = render(<Loading />);
 
-        await delay(ARBITRARY_DELAY / 2);
+        await delay(ARBITRARY_DELAY / 4);
         expect(actual1.lastFrame()).to.equal(expected.lastFrame());
         expect(actual2.lastFrame()).to.equal(expected.lastFrame());
     });
