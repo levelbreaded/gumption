@@ -1,5 +1,6 @@
 import React, { ReactNode, useMemo, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
+import { Blinker } from './blinker.js';
 
 interface ConfirmStatementProps {
     statement: ReactNode | string;
@@ -54,8 +55,8 @@ export const ConfirmStatement = ({
         <Box gap={1}>
             <Text>
                 {statement}
-                <Text>
-                    &nbsp;[
+                <Text color="grey">
+                    &nbsp;&rsaquo;&nbsp;[
                     <Text underline={intent.accept} bold={intent.accept}>
                         Y
                     </Text>
@@ -66,7 +67,7 @@ export const ConfirmStatement = ({
                     ]:
                 </Text>
             </Text>
-            <Text>{userInput.length ? userInput : '_'}</Text>
+            {userInput.length ? <Text>{userInput}</Text> : <Blinker />}
         </Box>
     );
 };
