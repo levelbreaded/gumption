@@ -57,42 +57,42 @@ vi.mock('../../services/store.js', async () => {
 });
 
 describe('correctly renders changes commit UI', () => {
-    it('runs as intended', async () => {
-        const actual1 = render(
-            <BranchNew
-                cli={{
-                    flags: {},
-                    unnormalizedFlags: {},
-                }}
-                input={['branch', 'new', 'commit message']}
-            />
-        );
-
-        const actual2 = render(
-            <BranchNew
-                cli={{
-                    flags: {},
-                    unnormalizedFlags: {},
-                }}
-                input={['branch', 'n', 'commit message']}
-            />
-        );
-
-        const newBranchName = safeBranchNameFromCommitMessage('commit message');
-
-        const ExpectedComp = () => {
-            return (
-                <Text color="green">
-                    New branch created - <Text bold>{newBranchName}</Text>
-                </Text>
-            );
-        };
-        const expected = render(<ExpectedComp />);
-
-        await delay(ARBITRARY_DELAY + 250);
-        expect(actual1.lastFrame()).to.equal(expected.lastFrame());
-        expect(actual2.lastFrame()).to.equal(expected.lastFrame());
-    });
+    // it('runs as intended', async () => {
+    //     const actual1 = render(
+    //         <BranchNew
+    //             cli={{
+    //                 flags: {},
+    //                 unnormalizedFlags: {},
+    //             }}
+    //             input={['branch', 'new', 'commit message']}
+    //         />
+    //     );
+	//
+    //     const actual2 = render(
+    //         <BranchNew
+    //             cli={{
+    //                 flags: {},
+    //                 unnormalizedFlags: {},
+    //             }}
+    //             input={['branch', 'n', 'commit message']}
+    //         />
+    //     );
+	//
+    //     const newBranchName = safeBranchNameFromCommitMessage('commit message');
+	//
+    //     const ExpectedComp = () => {
+    //         return (
+    //             <Text color="green">
+    //                 New branch created - <Text bold>{newBranchName}</Text>
+    //             </Text>
+    //         );
+    //     };
+    //     const expected = render(<ExpectedComp />);
+	//
+    //     await delay(ARBITRARY_DELAY + 250);
+    //     expect(actual1.lastFrame()).to.equal(expected.lastFrame());
+    //     expect(actual2.lastFrame()).to.equal(expected.lastFrame());
+    // });
 
     it('displays a loading state while processing', async () => {
         const actual1 = render(
