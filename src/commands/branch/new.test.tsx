@@ -23,6 +23,14 @@ const mocks = vi.hoisted(() => {
                         setTimeout(() => resolve('root'), ARBITRARY_DELAY / 4)
                     );
                 },
+                listBranches: async () => {
+                    return new Promise((resolve) =>
+                        setTimeout(
+                            () => resolve(['root', 'branch']),
+                            ARBITRARY_DELAY / 4
+                        )
+                    );
+                },
                 createBranch: async () => {
                     return new Promise((resolve) =>
                         setTimeout(resolve, ARBITRARY_DELAY / 4)

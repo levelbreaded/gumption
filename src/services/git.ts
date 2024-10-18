@@ -11,6 +11,7 @@ export interface GitService {
     _git: SimpleGit;
     branchLocal: () => Promise<ReturnType<SimpleGit['branchLocal']>>;
     currentBranch: () => Promise<string>;
+    listBranches: () => Promise<string[]>;
     checkout: (branch: string) => Promise<ReturnType<SimpleGit['checkout']>>;
     addAllFiles: () => Promise<void>;
     commit: (args: { message: string }) => Promise<void>;
@@ -32,6 +33,10 @@ export const createGitService = ({
         currentBranch: async () => {
             const { current } = await gitEngine.branchLocal();
             return current;
+        },
+        listBranches: async () => {
+            const { all } = await gitEngine.branchLocal();
+            return all;
         },
         // @ts-expect-error - being weird about the return type
         checkout: async (branch: string) => {
