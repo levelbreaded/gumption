@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Box, Text } from 'ink';
 import { CommandConfig } from '../types.js';
-import { useTree } from '../hooks/use-tree.js';
 import { Tree } from '../services/tree.js';
+import { useTree } from '../hooks/use-tree.js';
 
 const colorMap = ['blue', 'red', 'green', 'yellow', 'magenta', 'cyan', 'white'];
 

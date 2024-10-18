@@ -231,7 +231,7 @@ export const createTreeService = (config?: TreeServiceConfig): TreeService => {
         },
         getRoot: () => {
             const tree = _readTree({ storeService, setCurrentTree });
-            return _getRoot({tree});
+            return _getRoot({ tree });
         },
         ROOT,
     } as Omit<TreeService, 'currentTree'>;
