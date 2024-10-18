@@ -6,7 +6,7 @@ import { Loading } from '../../components/loading.js';
 import { Text } from 'ink';
 import { useGit } from '../../hooks/use-git.js';
 
-function ChangedAdd({}: CommandProps) {
+const ChangedAdd = ({}: CommandProps) => {
     const result = useChangesAdd();
 
     if (result.isError) {
@@ -22,7 +22,7 @@ function ChangedAdd({}: CommandProps) {
             Staged all changes
         </Text>
     );
-}
+};
 
 const useChangesAdd = (): Action => {
     const git = useGit();

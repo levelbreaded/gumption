@@ -14,22 +14,25 @@ import { safeBranchNameFromCommitMessage } from '../../utils/naming.js';
 import { useGit } from '../../hooks/use-git.js';
 import { useTree } from '../../hooks/use-tree.js';
 
-function BranchNew(props: CommandProps) {
+const BranchNew = (props: CommandProps) => {
+    const { rootBranchName } = useTree();
+
+    if (!rootBranchName) {
+        return <SelectRootBranch />;
+    }
+
+    return <DoBranchNew {...props} />;
+};
+
+const DoBranchNew = (props: CommandProps) => {
     const args = branchNewConfig.getProps(props) as Valid<
         PropSanitationResult<CommandArgs>
     >;
     const { commitMessage } = args.props;
 
-    const { rootBranchName } = useTree();
-
     const result = useBranchNew({
         message: commitMessage,
-        enabled: Boolean(rootBranchName),
     });
-
-    if (!result.isEnabled) {
-        return <SelectRootBranch />;
-    }
 
     if (result.isError) {
         return <ErrorDisplay error={result.error} />;
@@ -44,19 +47,13 @@ function BranchNew(props: CommandProps) {
             New branch created - <Text bold>{result.branchName}</Text>
         </Text>
     );
-}
+};
 
 type UseBranchNewAction = Action & {
     branchName: string;
 };
 
-const useBranchNew = ({
-    message,
-    enabled,
-}: {
-    message: string;
-    enabled: boolean;
-}): UseBranchNewAction => {
+const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
     const git = useGit();
 
     const branchName = safeBranchNameFromCommitMessage(message);
@@ -70,11 +67,9 @@ const useBranchNew = ({
 
     const action = useAction({
         asyncAction: performAction,
-        enabled,
     });
 
     return {
-        isEnabled: action.isEnabled,
         isLoading: action.isLoading,
         isError: action.isError,
         error: action.error,
