@@ -10,6 +10,7 @@ export const DEFAULT_OPTIONS: Partial<SimpleGitOptions> = {
 export interface GitService {
     _git: SimpleGit;
     branchLocal: () => Promise<ReturnType<SimpleGit['branchLocal']>>;
+    currentBranch: () => Promise<string>;
     checkout: (branch: string) => Promise<ReturnType<SimpleGit['checkout']>>;
     addAllFiles: () => Promise<void>;
     commit: (args: { message: string }) => Promise<void>;
@@ -25,12 +26,16 @@ export const createGitService = ({
     return {
         _git: gitEngine,
         // @ts-expect-error - being weird about the return type
-        checkout: async (branch: string) => {
-            return gitEngine.checkout(branch);
-        },
-        // @ts-expect-error - being weird about the return type
         branchLocal: async () => {
             return gitEngine.branchLocal();
+        },
+        currentBranch: async () => {
+            const { current } = await gitEngine.branchLocal();
+            return current;
+        },
+        // @ts-expect-error - being weird about the return type
+        checkout: async (branch: string) => {
+            return gitEngine.checkout(branch);
         },
         addAllFiles: async () => {
             await gitEngine.add('.');
