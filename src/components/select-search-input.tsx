@@ -45,7 +45,7 @@ export const SearchSelectInput = ({
                     items={filteredItems}
                     itemComponent={GumptionItemComponent}
                     onSelect={(item) => onSelect(item)}
-                    limit={10}
+                    limit={6}
                 />
             ) : (
                 <Text italic>No results</Text>
