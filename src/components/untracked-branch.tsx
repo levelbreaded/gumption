@@ -1,6 +1,6 @@
+import React, { useCallback } from 'react';
 import { Box, Text, useInput } from 'ink';
 import { useAsyncValue } from '../hooks/use-async-value.js';
-import React, { useCallback } from 'react';
 import { useGit } from '../hooks/use-git.js';
 
 const TRACK_BRANCH_COMMAND = 'gum branch track';
