@@ -4,10 +4,10 @@ import SelectInput from 'ink-select-input';
 import { Box, Text, useInput } from 'ink';
 import { ConfirmStatement } from './confirm-statement.js';
 import { Loading } from './loading.js';
+import { SearchSelectInput } from './select-search-input.js';
 import { useAsyncValue } from '../hooks/use-async-value.js';
 import { useGit } from '../hooks/use-git.js';
 import { useTree } from '../hooks/use-tree.js';
-import { SearchSelectInput } from './select-search-input.js';
 
 export const SelectRootBranch = () => {
     const git = useGit();
