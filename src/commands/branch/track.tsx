@@ -38,17 +38,6 @@ function BranchTrack(_: CommandProps) {
         return <SelectRootBranch />;
     }
 
-    if (!isCurrentBranchTracked) {
-        return (
-            <Text>
-                <Text color="green" bold>
-                    {currentBranch.value}
-                </Text>{' '}
-                is already a tracked branch
-            </Text>
-        );
-    }
-
     if (complete) {
         return (
             <Text>
@@ -60,6 +49,17 @@ function BranchTrack(_: CommandProps) {
                     {complete}
                 </Text>
                 !
+            </Text>
+        );
+    }
+
+    if (isCurrentBranchTracked) {
+        return (
+            <Text>
+                <Text color="green" bold>
+                    {currentBranch.value}
+                </Text>{' '}
+                is already a tracked branch
             </Text>
         );
     }
