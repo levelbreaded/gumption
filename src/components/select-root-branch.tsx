@@ -7,6 +7,7 @@ import { Loading } from './loading.js';
 import { useAsyncValue } from '../hooks/use-async-value.js';
 import { useGit } from '../hooks/use-git.js';
 import { useTree } from '../hooks/use-tree.js';
+import { SearchSelectInput } from './select-search-input.js';
 
 export const SelectRootBranch = () => {
     const git = useGit();
@@ -47,13 +48,7 @@ export const SelectRootBranch = () => {
         if (!allBranches || isLoading) {
             return [];
         }
-
-        const filtered = allBranches.filter((b) =>
-            search.length > 0
-                ? b.toLowerCase().includes(search.toLowerCase())
-                : true
-        );
-        return filtered.map((b) => ({ label: b, value: b }));
+        return allBranches.map((b) => ({ label: b, value: b }));
     }, [search, allBranches]);
 
     if (rootBranchName) {
@@ -89,26 +84,10 @@ export const SelectRootBranch = () => {
     }
 
     return (
-        <Box flexDirection="column">
-            <Text color="yellow">
-                Please select a root branch for Gumption before proceeding.
-            </Text>
-            <Text>
-                <Text italic={!search.length}>
-                    🔎&nbsp;
-                    {search.length ? search : '(type to search)'}
-                </Text>
-            </Text>
-            {items.length ? (
-                <SelectInput
-                    items={items}
-                    itemComponent={GumptionItemComponent}
-                    onSelect={handleSelect}
-                    limit={10}
-                />
-            ) : (
-                <Text italic>No results</Text>
-            )}
-        </Box>
+        <SearchSelectInput
+            title="Please select a root branch for Gumption before proceeding."
+            items={items}
+            onSelect={handleSelect}
+        />
     );
 };

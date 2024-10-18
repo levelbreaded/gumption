@@ -5,6 +5,7 @@ import { useGit } from './use-git.js';
 
 interface UseGitHelpersResult {
     currentBranch: AsyncResult<string>;
+    allBranches: AsyncResult<string[]>;
 }
 
 export const useGitHelpers = (): UseGitHelpersResult => {
@@ -18,7 +19,16 @@ export const useGitHelpers = (): UseGitHelpersResult => {
         getValue: getCurrentBranch,
     });
 
+    const getBranches = useCallback(async () => {
+        return git.listBranches();
+    }, [git.listBranches]);
+
+    const allBranchesResult = useAsyncValue({
+        getValue: getBranches,
+    });
+
     return {
         currentBranch: currentBranchResult,
+        allBranches: allBranchesResult,
     };
 };

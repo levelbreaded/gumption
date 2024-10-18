@@ -1,4 +1,5 @@
 import BranchNew, { branchNewConfig } from './commands/branch/new.js';
+import BranchTrack, { branchTrackConfig } from './commands/branch/track.js';
 import ChangesAdd, { changesAddConfig } from './commands/changes/add.js';
 import ChangesCommit, {
     changesCommitConfig,
@@ -49,6 +50,10 @@ export const REGISTERED_COMMANDS: CommandGroup = {
         new: {
             component: BranchNew,
             config: branchNewConfig,
+        },
+        track: {
+            component: BranchTrack,
+            config: branchTrackConfig,
         },
     } as CommandGroup,
 } as const;
