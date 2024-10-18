@@ -21,7 +21,7 @@ export const SelectRootBranch = () => {
         return all;
     }, [git]);
 
-    const { value: allBranches } = useAsyncValue({
+    const { value: allBranches, isLoading } = useAsyncValue({
         getValue: getAllBranches,
     });
 
@@ -44,7 +44,7 @@ export const SelectRootBranch = () => {
     );
 
     const items = useMemo(() => {
-        if (!allBranches) {
+        if (!allBranches || isLoading) {
             return [];
         }
 

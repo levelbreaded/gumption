@@ -1,26 +1,22 @@
-import React, { useCallback } from 'react';
-import { Box, Text, useInput } from 'ink';
-import { useAsyncValue } from '../hooks/use-async-value.js';
-import { useGit } from '../hooks/use-git.js';
+import React from 'react';
+import { Box, Text } from 'ink';
+import { Loading } from './loading.js';
+import { useGitHelpers } from '../hooks/use-git-helpers.js';
 
 const TRACK_BRANCH_COMMAND = 'gum branch track';
 
 export const UntrackedBranch = () => {
-    const git = useGit();
+    const { currentBranch } = useGitHelpers();
 
-    const getCurrentBranch = useCallback(async () => {
-        return await git.currentBranch();
-    }, [git.currentBranch]);
-
-    const { value: currentBranch } = useAsyncValue({
-        getValue: getCurrentBranch,
-    });
+    if (currentBranch.isLoading) {
+        return <Loading />;
+    }
 
     return (
         <Box flexDirection="column">
             <Text color="red">
                 Cannot perform this operation on untracked branch{' '}
-                <Text color="yellow">{currentBranch}</Text>.
+                <Text color="yellow">{currentBranch.value}</Text>.
             </Text>
             <Text color="red">
                 You can start tracking it with{' '}
