@@ -1,6 +1,6 @@
 import React, { ReactNode, useMemo, useState } from 'react';
-import { Box, Text, useInput } from 'ink';
 import { Blinker } from './blinker.js';
+import { Box, Text, useInput } from 'ink';
 
 interface ConfirmStatementProps {
     statement: ReactNode | string;
