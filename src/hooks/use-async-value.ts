@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 type State<T> = { type: 'LOADING' } | { type: 'COMPLETE'; value: T };
 type Result<T> = { value?: T };
+
 export const useAsyncValue = <T>({
     getValue,
 }: {
