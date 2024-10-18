@@ -67,7 +67,7 @@ describe('correctly renders changes commit UI', () => {
     //             input={['branch', 'new', 'commit message']}
     //         />
     //     );
-	//
+    //
     //     const actual2 = render(
     //         <BranchNew
     //             cli={{
@@ -77,9 +77,9 @@ describe('correctly renders changes commit UI', () => {
     //             input={['branch', 'n', 'commit message']}
     //         />
     //     );
-	//
+    //
     //     const newBranchName = safeBranchNameFromCommitMessage('commit message');
-	//
+    //
     //     const ExpectedComp = () => {
     //         return (
     //             <Text color="green">
@@ -88,7 +88,7 @@ describe('correctly renders changes commit UI', () => {
     //         );
     //     };
     //     const expected = render(<ExpectedComp />);
-	//
+    //
     //     await delay(ARBITRARY_DELAY + 250);
     //     expect(actual1.lastFrame()).to.equal(expected.lastFrame());
     //     expect(actual2.lastFrame()).to.equal(expected.lastFrame());
