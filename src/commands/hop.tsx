@@ -115,7 +115,7 @@ const Hop = (props: CommandProps) => {
             limit={10}
         />
     );
-}
+};
 
 interface CommandArgs {
     searchTerm?: string;

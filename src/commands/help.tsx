@@ -52,7 +52,7 @@ const Help = (props: CommandProps) => {
             <Text>Usage - {command.config.usage}</Text>
         </Box>
     );
-}
+};
 
 const CommandList = ({
     title,
