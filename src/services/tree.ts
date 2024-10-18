@@ -2,7 +2,7 @@ import { StoreService, createStoreService } from './store.js';
 
 const FILENAME = 'branches.json';
 
-type BranchNode = { key: string; parent: string | null };
+export type BranchNode = { key: string; parent: string | null };
 export type Tree = BranchNode[];
 
 type ParentBranch = string | symbol;
@@ -200,6 +200,7 @@ export interface TreeService {
     moveOnto: (args: { branch: string; parent: string }) => void;
     removeBranch: (branch: string) => void;
     get: () => Tree;
+    getRoot: () => BranchNode;
     ROOT: symbol;
 }
 
@@ -227,6 +228,10 @@ export const createTreeService = (config?: TreeServiceConfig): TreeService => {
         },
         get: () => {
             return _readTree({ storeService, setCurrentTree });
+        },
+        getRoot: () => {
+            const tree = _readTree({ storeService, setCurrentTree });
+            return _getRoot({tree});
         },
         ROOT,
     } as Omit<TreeService, 'currentTree'>;
