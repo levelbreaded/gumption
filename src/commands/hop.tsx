@@ -11,7 +11,7 @@ import {
 } from '../types.js';
 import { useGit } from '../hooks/use-git.js';
 
-function Hop(props: CommandProps) {
+const Hop = (props: CommandProps) => {
     const args = hopConfig.getProps(props) as Valid<
         PropSanitationResult<CommandArgs>
     >;
@@ -115,7 +115,7 @@ function Hop(props: CommandProps) {
             limit={10}
         />
     );
-}
+};
 
 interface CommandArgs {
     searchTerm?: string;

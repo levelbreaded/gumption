@@ -13,21 +13,24 @@ import { Text } from 'ink';
 import { useGit } from '../../hooks/use-git.js';
 import { useTree } from '../../hooks/use-tree.js';
 
-function ChangesCommit(props: CommandProps) {
+const ChangesCommit = (props: CommandProps) => {
+    const { rootBranchName } = useTree();
+
+    if (!rootBranchName) {
+        return <SelectRootBranch />;
+    }
+
+    return <DoChangesCommit {...props} />;
+};
+
+const DoChangesCommit = (props: CommandProps) => {
     const args = changesCommitConfig.getProps(props) as Valid<
         PropSanitationResult<CommandArgs>
     >;
 
-    const { rootBranchName } = useTree();
-
     const result = useChangesCommit({
         message: args.props.message,
-        enabled: Boolean(rootBranchName),
     });
-
-    if (!result.isEnabled) {
-        return <SelectRootBranch />;
-    }
 
     if (result.isError) {
         return <ErrorDisplay error={result.error} />;
@@ -42,15 +45,9 @@ function ChangesCommit(props: CommandProps) {
             Committed all changes
         </Text>
     );
-}
+};
 
-const useChangesCommit = ({
-    message,
-    enabled,
-}: {
-    message: string;
-    enabled: boolean;
-}): Action => {
+const useChangesCommit = ({ message }: { message: string }): Action => {
     const git = useGit();
 
     const performAction = useCallback(async () => {
@@ -60,7 +57,6 @@ const useChangesCommit = ({
 
     return useAction({
         asyncAction: performAction,
-        enabled,
     });
 };
 

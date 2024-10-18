@@ -12,7 +12,7 @@ import {
 import { REGISTERED_COMMANDS } from '../command-registry.js';
 import { findCommand, findCommandGroup } from '../utils/commands.js';
 
-function Help(props: CommandProps) {
+const Help = (props: CommandProps) => {
     const args = helpConfig.getProps(props) as Valid<
         PropSanitationResult<CommandArgs>
     >;
@@ -52,7 +52,7 @@ function Help(props: CommandProps) {
             <Text>Usage - {command.config.usage}</Text>
         </Box>
     );
-}
+};
 
 const CommandList = ({
     title,
