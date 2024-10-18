@@ -60,14 +60,25 @@ type UseBranchNewAction = Action & {
 
 const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
     const git = useGit();
+    const { attachTo } = useTree();
 
     const branchName = safeBranchNameFromCommitMessage(message);
 
-    const performAction = useCallback(async () => {
+    const performGitActions = useCallback(async () => {
+        const branchBefore = await git.currentBranch();
+
         await git.createBranch({ branchName });
         await git.checkout(branchName);
         await git.addAllFiles();
         await git.commit({ message });
+
+        return branchBefore;
+    }, [branchName]);
+
+    const performAction = useCallback(async () => {
+        await performGitActions().then((prevBranch) => {
+            attachTo({ newBranch: branchName, parent: prevBranch });
+        });
     }, [branchName]);
 
     const action = useAction({

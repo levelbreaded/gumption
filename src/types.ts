@@ -1,6 +1,10 @@
 import { ComponentType } from 'react';
 import { Result } from 'meow';
 
+export type AsyncResult<T> =
+    | { value: T; isLoading: false }
+    | { value: undefined; isLoading: true };
+
 export type SanitizeProps<
     T extends Record<string, unknown>,
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
