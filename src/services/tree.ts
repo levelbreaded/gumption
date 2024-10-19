@@ -200,7 +200,7 @@ export interface TreeService {
     moveOnto: (args: { branch: string; parent: string }) => void;
     removeBranch: (branch: string) => void;
     get: () => Tree;
-    getRoot: () => BranchNode;
+    getRoot: () => BranchNode | undefined;
     ROOT: symbol;
 }
 
@@ -231,7 +231,11 @@ export const createTreeService = (config?: TreeServiceConfig): TreeService => {
         },
         getRoot: () => {
             const tree = _readTree({ storeService, setCurrentTree });
-            return _getRoot({ tree });
+            try {
+                return _getRoot({ tree });
+            } catch (e) {
+                return undefined;
+            }
         },
         ROOT,
     } as Omit<TreeService, 'currentTree'>;

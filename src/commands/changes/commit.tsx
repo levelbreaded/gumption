@@ -10,14 +10,19 @@ import {
 import { Loading } from '../../components/loading.js';
 import { SelectRootBranch } from '../../components/select-root-branch.js';
 import { Text } from 'ink';
+import { UntrackedBranch } from '../../components/untracked-branch.js';
 import { useGit } from '../../hooks/use-git.js';
 import { useTree } from '../../hooks/use-tree.js';
 
 const ChangesCommit = (props: CommandProps) => {
-    const { rootBranchName } = useTree();
+    const { rootBranchName, isCurrentBranchTracked } = useTree();
 
     if (!rootBranchName) {
         return <SelectRootBranch />;
+    }
+
+    if (!isCurrentBranchTracked) {
+        return <UntrackedBranch />;
     }
 
     return <DoChangesCommit {...props} />;

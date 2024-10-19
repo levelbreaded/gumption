@@ -9,8 +9,13 @@ import { useTree } from '../../hooks/use-tree.js';
 
 function BranchTrack(_: CommandProps) {
     const { allBranches, currentBranch } = useGitHelpers();
-    const { rootBranchName, isCurrentBranchTracked, attachTo, isLoading } =
-        useTree();
+    const {
+        rootBranchName,
+        isCurrentBranchTracked,
+        attachTo,
+        isLoading,
+        currentTree,
+    } = useTree();
 
     // either false or the name of the parent branch
     const [complete, setComplete] = useState<false | string>(false);
@@ -26,9 +31,12 @@ function BranchTrack(_: CommandProps) {
 
     const branchItems = useMemo(() => {
         if (allBranches.isLoading) return [];
-
-        return allBranches.value.map((b) => ({ label: b, value: b }));
-    }, [allBranches.value, allBranches.isLoading]);
+        // only branches in the tree already can be selected as the parent in this case
+        const branchesInTree = allBranches.value.filter((b) => {
+            return Boolean(currentTree.find((node) => node.key === b));
+        });
+        return branchesInTree.map((b) => ({ label: b, value: b }));
+    }, [allBranches.value, allBranches.isLoading, currentTree]);
 
     if (isLoading || currentBranch.isLoading || allBranches.isLoading) {
         return <Loading />;

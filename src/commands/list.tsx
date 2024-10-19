@@ -1,88 +1,111 @@
 import React, { useMemo } from 'react';
 import { Box, Text } from 'ink';
 import { CommandConfig } from '../types.js';
+import { Loading } from '../components/loading.js';
+import { SelectRootBranch } from '../components/select-root-branch.js';
 import { Tree } from '../services/tree.js';
+import { useGitHelpers } from '../hooks/use-git-helpers.js';
 import { useTree } from '../hooks/use-tree.js';
 
 const colorMap = ['blue', 'red', 'green', 'yellow', 'magenta', 'cyan', 'white'];
 
 /**
- * Function to convert the parent-referential Tree structure to a child-referral structure.
- * @param tree the current tree
- * @returns a map containing nodes and their children
+ * @returns a record mapping every branch name to the names of its child branches in the tree
  */
-export const getChildMap = (tree: Tree): Map<string, string[]> => {
-    const childMap = new Map<string, string[]>();
+export const treeToParentChildRecord = (
+    tree: Tree
+): Record<string, string[]> => {
+    const record: Record<string, string[]> = {};
 
-    tree.forEach(({ key: node, parent }) => {
-        if (!childMap.has(node)) {
-            childMap.set(node, []);
+    tree.forEach((node) => {
+        if (!(node.key in record)) {
+            record[node.key] = [];
         }
-        if (parent !== null) {
-            if (!childMap.has(parent)) {
-                childMap.set(parent, []);
-            }
-            childMap.get(parent)!.push(node);
+
+        if (node.parent === null) return;
+
+        if (node.parent in record) {
+            const existingChildren = record[node.parent] as string[];
+            record[node.parent] = [...existingChildren, node.key];
+        }
+        if (!(node.parent in record)) {
+            record[node.parent] = [];
         }
     });
-    return childMap;
+
+    return record;
 };
 
-const getChildMappedTreeString = (
-    childMap: Map<string, string[]>,
-    currentNode: string,
-    prefix: string = '',
+const BranchTreeDisplay = ({
+    treeParentChildRecord,
+    displayedBranchName,
+    currentBranch,
+    prefix = '',
     isLast = true,
-    depth = 0
-) => {
+    depth = 0,
+}: {
+    treeParentChildRecord: Record<string, string[]>;
+    displayedBranchName: string;
+    currentBranch: string;
+    prefix?: string;
+    isLast?: boolean;
+    depth?: number;
+}) => {
     // Misc UNICODE for reference: └ ─ ┘ ┌ ┐ ├ | ● ○
-
     const connector = depth === 0 ? '   ' : isLast ? '└──' : '├──';
     const color = colorMap[depth % colorMap.length];
-
-    const currentElement = (
-        <Text key={currentNode}>
-            {`${prefix}${connector}○ `}
-            <Text color={color}>{`${currentNode}\n`}</Text>
-        </Text>
-    );
-
     const updatedPrefix = `${prefix}${isLast ? '   ' : '|  '}`;
-
-    const childElements: JSX.Element[] = [];
-    const children = childMap.get(currentNode) ?? [];
-    const numChildren = children.length;
-    children.forEach((child) => {
-        const isLastChild = child === children[numChildren - 1];
-        const childElement = getChildMappedTreeString(
-            childMap,
-            child,
-            updatedPrefix,
-            isLastChild,
-            depth + 1
-        );
-        childElements.push(
-            <React.Fragment key={child}>{childElement}</React.Fragment>
-        );
-    });
+    const children = treeParentChildRecord?.[displayedBranchName] ?? [];
 
     return (
         <>
-            {currentElement}
-            {childElements}
+            <Text key={displayedBranchName}>
+                {`${prefix}${connector}${currentBranch === displayedBranchName ? '◉' : '○'} `}
+                <Text color={color}>{`${displayedBranchName}\n`}</Text>
+            </Text>
+            {children.map((child) => {
+                return (
+                    <React.Fragment key={child}>
+                        <BranchTreeDisplay
+                            treeParentChildRecord={treeParentChildRecord}
+                            displayedBranchName={child}
+                            currentBranch={currentBranch}
+                            prefix={updatedPrefix}
+                            isLast={child === children[children.length - 1]}
+                            depth={depth + 1}
+                        />
+                    </React.Fragment>
+                );
+            })}
         </>
     );
 };
 
 export const List = () => {
-    const { get, getRoot } = useTree();
-    const tree = useMemo(() => get(), []);
-    const { key: root } = useMemo(() => getRoot(), []);
-    const childMap = getChildMap(tree);
+    const { currentBranch } = useGitHelpers();
+    const { get, rootBranchName } = useTree();
+    const treeParentChildRecord = useMemo(
+        () => treeToParentChildRecord(get()),
+        []
+    );
+
+    if (!rootBranchName) {
+        return <SelectRootBranch />;
+    }
+
+    if (currentBranch.isLoading) {
+        return <Loading />;
+    }
 
     return (
         <Box flexDirection="column">
-            <Text>{getChildMappedTreeString(childMap, root)}</Text>
+            <Text>
+                <BranchTreeDisplay
+                    treeParentChildRecord={treeParentChildRecord}
+                    displayedBranchName={rootBranchName}
+                    currentBranch={currentBranch.value}
+                />
+            </Text>
         </Box>
     );
 };
