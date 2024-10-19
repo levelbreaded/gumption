@@ -1,8 +1,6 @@
 import { Tree, TreeService, createTreeService } from '../services/tree.js';
-import { useAsyncValue } from './use-async-value.js';
-import { useCallback, useMemo, useState } from 'react';
-import { useGit } from './use-git.js';
 import { useGitHelpers } from './use-git-helpers.js';
+import { useMemo, useState } from 'react';
 
 interface UseTreeResult extends TreeService {
     currentTree: Tree;
