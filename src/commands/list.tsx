@@ -26,18 +26,18 @@ const styleMap: TextStyle[] = [
     { color: 'cyanBright' },
 ];
 
-const Connectors = ({ connectors }: { connectors: DisplayElement[] }) => {
+const DisplayElementText = ({ elements }: { elements: DisplayElement[] }) => {
     return (
         <>
-            {connectors.map((connector, index) => {
+            {elements.map((element, index) => {
                 const style = styleMap[index % styleMap.length] as TextStyle;
                 return (
                     <Text
-                        key={`connector-${index}`}
+                        key={`element-${index}`}
                         color={style.color}
                         dimColor={style.dimColor}
                     >
-                        {connector.symbols}
+                        {element.symbols}
                     </Text>
                 );
             })}
@@ -79,8 +79,8 @@ export const List = () => {
                 ] as TextStyle;
                 return (
                     <Text key={node.name}>
-                        <Connectors
-                            connectors={[
+                        <DisplayElementText
+                            elements={[
                                 ...node.prefix,
                                 {
                                     symbols:
@@ -103,11 +103,11 @@ export const List = () => {
     );
 };
 
-type DisplayElement = {
+interface DisplayElement {
     symbols: string;
 };
 
-type DisplayNode = {
+interface DisplayNode {
     prefix: DisplayElement[];
     suffix: DisplayElement[];
     name: string;
