@@ -105,7 +105,7 @@ export const List = () => {
 
 interface DisplayElement {
     symbols: string;
-};
+}
 
 interface DisplayNode {
     prefix: DisplayElement[];
@@ -115,7 +115,7 @@ interface DisplayNode {
      * How "wide" (in increments of 2 spaces) the row will be. This helps to line up the branch names on the right
      */
     width: number;
-};
+}
 
 const getDisplayNodes = ({
     record,
