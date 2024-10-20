@@ -93,7 +93,8 @@ export const List = () => {
                         />
                         <Spaces count={maxWidth + 2 - node.width} />
                         <Text color={style.color} dimColor={style.dimColor}>
-                            {node.name}
+                            {node.name}{' '}
+                            {currentBranch.value === node.name ? '👈' : ''}
                         </Text>
                     </Text>
                 );
