@@ -53,9 +53,7 @@ const Hop = (_: CommandProps) => {
         return (
             <Box flexDirection="column">
                 <Box gap={1}>
-                    <Text dimColor italic color="cyan">
-                        {currentBranch.value}
-                    </Text>
+                    <Text color="yellow">{currentBranch.value}</Text>
                     <Text bold>↴</Text>
                 </Box>
                 <Text>
