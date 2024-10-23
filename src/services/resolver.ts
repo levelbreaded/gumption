@@ -1,6 +1,6 @@
+import { DEFAULT_OPTIONS, createGitService } from './git.js';
 import { Tree } from './tree.js';
 import { treeToParentChildRecord } from '../utils/tree-helpers.js';
-import { createGitService, DEFAULT_OPTIONS } from './git.js';
 
 export const recursiveRebase = async ({
     tree,
@@ -17,7 +17,7 @@ export const recursiveRebase = async ({
     const baseBranchNode = tree.find((node) => node.key === baseBranch);
 
     if (!baseBranchNode) {
-        throw new Error();
+        throw new Error(`${baseBranch} is not in the tracked tree.`);
     }
 
     const rebasedEventHandler = events?.rebased
@@ -35,15 +35,10 @@ export const recursiveRebase = async ({
     });
 
     for (const rebaseAction of rebaseActions) {
-        try {
-            await git.rebaseBranchOnto({
-                branch: rebaseAction.branch,
-                ontoBranch: rebaseAction.ontoBranch,
-            });
-        } catch (e) {
-            console.log(JSON.stringify(e));
-            throw e;
-        }
+        await git.rebaseBranchOnto({
+            branch: rebaseAction.branch,
+            ontoBranch: rebaseAction.ontoBranch,
+        });
 
         rebasedEventHandler(rebaseAction);
     }
