@@ -85,7 +85,7 @@ export const List = () => {
                                 {
                                     symbols:
                                         currentBranch.value === node.name
-                                            ? '◉'
+                                            ? '⊗'
                                             : '◯',
                                 },
                                 ...node.suffix,

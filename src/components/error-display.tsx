@@ -8,19 +8,11 @@ type ErrorProps = {
 function ErrorDisplay({ error }: ErrorProps) {
     return (
         <Box flexDirection="column">
-            <Text>
+            <Text color="yellow">
                 Yikes, it seems something went wrong. Please try again or
                 contact us if the issue persists.
             </Text>
-            <Box
-                flexDirection="column"
-                width="50"
-                borderStyle="single"
-                borderColor="red"
-                paddingX={3}
-            >
-                <Text color="red">{error.message}</Text>
-            </Box>
+            <Text color="red">{error.message}</Text>
         </Box>
     );
 }

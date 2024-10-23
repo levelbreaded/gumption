@@ -16,6 +16,11 @@ export interface GitService {
     addAllFiles: () => Promise<void>;
     commit: (args: { message: string }) => Promise<void>;
     createBranch: (args: { branchName: string }) => Promise<void>;
+    rebaseBranchOnto: (args: {
+        branch: string;
+        ontoBranch: string;
+    }) => Promise<void>;
+    isRebasing: () => Promise<boolean>;
 }
 
 export const createGitService = ({
@@ -50,6 +55,27 @@ export const createGitService = ({
         },
         createBranch: async ({ branchName }: { branchName: string }) => {
             await gitEngine.branch([branchName]);
+        },
+        rebaseBranchOnto: async ({
+            branch,
+            ontoBranch,
+        }: {
+            branch: string;
+            ontoBranch: string;
+        }) => {
+            await gitEngine.rebase([ontoBranch, branch]);
+        },
+        isRebasing: async () => {
+            // see https://adamj.eu/tech/2023/05/29/git-detect-in-progress-operation/
+            try {
+                const result = await gitEngine.revparse([
+                    '--verify',
+                    'REBASE_HEAD',
+                ]);
+                return Boolean(result);
+            } catch {
+                return false;
+            }
         },
     };
 };
