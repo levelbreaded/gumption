@@ -8,13 +8,16 @@ import {
     Valid,
 } from '../../types.js';
 import { Loading } from '../../components/loading.js';
+import { RecursiveRebaser } from '../../components/recursive-rebaser.js';
 import { SelectRootBranch } from '../../components/select-root-branch.js';
 import { Text } from 'ink';
 import { UntrackedBranch } from '../../components/untracked-branch.js';
 import { useGit } from '../../hooks/use-git.js';
+import { useGitHelpers } from '../../hooks/use-git-helpers.js';
 import { useTree } from '../../hooks/use-tree.js';
 
 const ChangesCommit = (props: CommandProps) => {
+    const { currentBranch } = useGitHelpers();
     const { rootBranchName, isCurrentBranchTracked } = useTree();
 
     if (!rootBranchName) {
@@ -25,10 +28,17 @@ const ChangesCommit = (props: CommandProps) => {
         return <UntrackedBranch />;
     }
 
-    return <DoChangesCommit {...props} />;
+    if (currentBranch.isLoading) {
+        return <Loading />;
+    }
+
+    return <DoChangesCommit {...props} currentBranch={currentBranch.value} />;
 };
 
-const DoChangesCommit = (props: CommandProps) => {
+const DoChangesCommit = ({
+    currentBranch,
+    ...props
+}: CommandProps & { currentBranch: string }) => {
     const args = changesCommitConfig.getProps(props) as Valid<
         PropSanitationResult<CommandArgs>
     >;
@@ -46,9 +56,12 @@ const DoChangesCommit = (props: CommandProps) => {
     }
 
     return (
-        <Text bold color="green">
-            Committed all changes
-        </Text>
+        <RecursiveRebaser
+            baseBranch={currentBranch}
+            successStateNode={
+                <Text color="green">Committed changes successfully</Text>
+            }
+        />
     );
 };
 
