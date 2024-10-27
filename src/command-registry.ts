@@ -4,6 +4,7 @@ import ChangesAdd, { changesAddConfig } from './commands/changes/add.js';
 import ChangesCommit, {
     changesCommitConfig,
 } from './commands/changes/commit.js';
+import Continue, { continueConfig } from './commands/continue.js';
 import Help, { helpConfig } from './commands/help.js';
 import Hop, { hopConfig } from './commands/hop.js';
 import Sync, { syncConfig } from './commands/sync.js';
@@ -30,6 +31,10 @@ export const REGISTERED_COMMANDS: CommandGroup = {
     list: {
         component: List,
         config: listConfig,
+    },
+    continue: {
+        component: Continue,
+        config: continueConfig,
     },
     changes: {
         _group: {

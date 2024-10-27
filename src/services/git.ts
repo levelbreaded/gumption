@@ -21,6 +21,7 @@ export interface GitService {
         ontoBranch: string;
     }) => Promise<void>;
     isRebasing: () => Promise<boolean>;
+    rebaseContinue: () => Promise<void>;
 }
 
 export const createGitService = ({
@@ -76,6 +77,9 @@ export const createGitService = ({
             } catch {
                 return false;
             }
+        },
+        rebaseContinue: async () => {
+            await gitEngine.rebase(['--continue']);
         },
     };
 };

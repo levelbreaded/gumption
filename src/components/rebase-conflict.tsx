@@ -9,11 +9,11 @@ export const RebaseConflict = () => {
                 1. Please resolve the conflict before proceeding
             </Text>
             <Text color="yellow">
-                2. Add all files with <Text color="cyan">git add .</Text>
+                2. Add all files with <Text color="cyan">gum changes add</Text>
             </Text>
             <Text color="yellow">
                 3. Continue the rebase with{' '}
-                <Text color="cyan">git rebase --continue</Text>
+                <Text color="cyan">gum continue</Text>
             </Text>
         </Box>
     );
