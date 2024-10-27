@@ -10,7 +10,10 @@ export const recursiveRebase = async ({
     tree: Tree;
     baseBranch: string;
     events?: {
-        rebased: (rebaseAction: RebaseAction) => void;
+        rebased: (
+            rebaseAction: RebaseAction,
+            state: 'STARTED' | 'COMPLETED'
+        ) => void;
         complete: () => void;
     };
 }) => {
@@ -22,7 +25,7 @@ export const recursiveRebase = async ({
 
     const rebasedEventHandler = events?.rebased
         ? events.rebased
-        : (_: RebaseAction) => {};
+        : (_: RebaseAction, __: string) => {};
 
     const completeEventHandler = events?.complete ? events.complete : () => {};
 
@@ -35,18 +38,19 @@ export const recursiveRebase = async ({
     });
 
     for (const rebaseAction of rebaseActions) {
+        rebasedEventHandler(rebaseAction, 'STARTED');
         await git.rebaseBranchOnto({
             branch: rebaseAction.branch,
             ontoBranch: rebaseAction.ontoBranch,
         });
-
-        rebasedEventHandler(rebaseAction);
+        rebasedEventHandler(rebaseAction, 'COMPLETED');
     }
 
+    await git.checkout(baseBranch);
     completeEventHandler();
 };
 
-interface RebaseAction {
+export interface RebaseAction {
     branch: string;
     ontoBranch: string;
 }
