@@ -80,8 +80,8 @@ branches are stacked on which branches.
 
 This is now v0.
 
-5. Build `branch attach`
-6. Build `continue`
+5. Build `branch attach` (Scope creep) - `branch delete` & `branch switch`
+6. Build `continue` ✅
 
 This is now v0.1.X
 
@@ -93,10 +93,10 @@ This is now v0.1.X
 This is v0.2.X
 
 11. Build GitHub integration to make/track PRs
-12. Build `branch submit`
+12. Build `branch submit` ❌
 
 This is v0.3.X
 
-13. Build `sync`
+13. Build `sync` 🟠
 
 This is v1.
