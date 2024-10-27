@@ -74,6 +74,7 @@ export const List = () => {
     return (
         <Box flexDirection="column" gap={0}>
             {nodes.map((node) => {
+                const isCurrent = currentBranch.value === node.name;
                 const style = styleMap[
                     node.prefix.length % styleMap.length
                 ] as TextStyle;
@@ -83,18 +84,19 @@ export const List = () => {
                             elements={[
                                 ...node.prefix,
                                 {
-                                    symbols:
-                                        currentBranch.value === node.name
-                                            ? '⊗'
-                                            : '◯',
+                                    symbols: isCurrent ? '⊗' : '◯',
                                 },
                                 ...node.suffix,
                             ]}
                         />
-                        <Spaces count={maxWidth + 2 - node.width} />
+                        <Spaces
+                            count={
+                                maxWidth + 2 - node.width + (isCurrent ? 0 : 2)
+                            }
+                        />
                         <Text color={style.color} dimColor={style.dimColor}>
+                            {isCurrent ? ' 👉 ' : ''}
                             {node.name}{' '}
-                            {currentBranch.value === node.name ? '👈' : ''}
                         </Text>
                     </Text>
                 );
