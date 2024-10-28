@@ -5,10 +5,12 @@ import { treeToParentChildRecord } from '../utils/tree-helpers.js';
 export const recursiveRebase = async ({
     tree,
     baseBranch,
+    endBranch,
     events,
 }: {
     tree: Tree;
     baseBranch: string;
+    endBranch: string;
     events?: {
         rebased: (
             rebaseAction: RebaseAction,
@@ -46,7 +48,7 @@ export const recursiveRebase = async ({
         rebasedEventHandler(rebaseAction, 'COMPLETED');
     }
 
-    await git.checkout(baseBranch);
+    await git.checkout(endBranch);
     completeEventHandler();
 };
 

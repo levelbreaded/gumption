@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Box, Text } from 'ink';
 import { CommandConfig } from '../types.js';
 import { ForegroundColorName } from 'chalk';
@@ -6,8 +6,88 @@ import { LiteralUnion } from 'type-fest';
 import { Loading } from '../components/loading.js';
 import { SelectRootBranch } from '../components/select-root-branch.js';
 import { treeToParentChildRecord } from '../utils/tree-helpers.js';
+import { useAsyncValue } from '../hooks/use-async-value.js';
+import { useGit } from '../hooks/use-git.js';
 import { useGitHelpers } from '../hooks/use-git-helpers.js';
 import { useTree } from '../hooks/use-tree.js';
+
+export const List = () => {
+    const git = useGit();
+    const { currentBranch } = useGitHelpers();
+    const { get, rootBranchName, currentTree } = useTree();
+    const treeParentChildRecord = useMemo(
+        () => treeToParentChildRecord(get()),
+        []
+    );
+
+    const getBranchNeedsRebaseRecord = useCallback(async () => {
+        const record: Record<string, boolean> = {};
+        await Promise.all(
+            currentTree.map(async (_node) => {
+                if (!_node.parent) return null;
+
+                record[_node.key] = await git.needsRebaseOnto({
+                    branch: _node.key,
+                    ontoBranch: _node.parent,
+                });
+                return null;
+            })
+        );
+        return record;
+    }, [currentTree, git.needsRebaseOnto]);
+
+    const branchNeedsRebaseRecord = useAsyncValue({
+        getValue: getBranchNeedsRebaseRecord,
+    });
+
+    if (!rootBranchName) {
+        return <SelectRootBranch />;
+    }
+
+    if (currentBranch.isLoading || branchNeedsRebaseRecord.isLoading) {
+        return <Loading />;
+    }
+
+    const nodes = getDisplayNodes({
+        record: treeParentChildRecord,
+        branchName: rootBranchName,
+    });
+    const maxWidth = maxWidthFromDisplayNodes({ displayNodes: nodes });
+
+    return (
+        <Box flexDirection="column" gap={0}>
+            {nodes.map((node) => {
+                const isCurrent = currentBranch.value === node.name;
+                const style = styleMap[
+                    node.prefix.length % styleMap.length
+                ] as TextStyle;
+                return (
+                    <Text key={node.name}>
+                        <DisplayElementText
+                            elements={[
+                                ...node.prefix,
+                                {
+                                    symbols: isCurrent ? '⊗' : '◯',
+                                },
+                                ...node.suffix,
+                            ]}
+                        />
+                        <Spaces
+                            count={maxWidth - node.width + (isCurrent ? 0 : 2)}
+                        />
+                        <Text color={style.color} dimColor={style.dimColor}>
+                            {isCurrent ? ' 👉 ' : ''}
+                            {node.name}{' '}
+                            {branchNeedsRebaseRecord.value?.[node.name] && (
+                                <Text color="white">(Needs rebase)</Text>
+                            )}
+                        </Text>
+                    </Text>
+                );
+            })}
+        </Box>
+    );
+};
 
 interface TextStyle {
     color: LiteralUnion<ForegroundColorName, string>;
@@ -47,62 +127,6 @@ const DisplayElementText = ({ elements }: { elements: DisplayElement[] }) => {
 
 const Spaces = ({ count }: { count: number }) => {
     return <>{Array(count).fill('  ')}</>;
-};
-
-export const List = () => {
-    const { currentBranch } = useGitHelpers();
-    const { get, rootBranchName } = useTree();
-    const treeParentChildRecord = useMemo(
-        () => treeToParentChildRecord(get()),
-        []
-    );
-
-    if (!rootBranchName) {
-        return <SelectRootBranch />;
-    }
-
-    if (currentBranch.isLoading) {
-        return <Loading />;
-    }
-
-    const nodes = getDisplayNodes({
-        record: treeParentChildRecord,
-        branchName: rootBranchName,
-    });
-    const maxWidth = maxWidthFromDisplayNodes({ displayNodes: nodes });
-
-    return (
-        <Box flexDirection="column" gap={0}>
-            {nodes.map((node) => {
-                const isCurrent = currentBranch.value === node.name;
-                const style = styleMap[
-                    node.prefix.length % styleMap.length
-                ] as TextStyle;
-                return (
-                    <Text key={node.name}>
-                        <DisplayElementText
-                            elements={[
-                                ...node.prefix,
-                                {
-                                    symbols: isCurrent ? '⊗' : '◯',
-                                },
-                                ...node.suffix,
-                            ]}
-                        />
-                        <Spaces
-                            count={
-                                maxWidth + 2 - node.width + (isCurrent ? 0 : 2)
-                            }
-                        />
-                        <Text color={style.color} dimColor={style.dimColor}>
-                            {isCurrent ? ' 👉 ' : ''}
-                            {node.name}{' '}
-                        </Text>
-                    </Text>
-                );
-            })}
-        </Box>
-    );
 };
 
 interface DisplayElement {

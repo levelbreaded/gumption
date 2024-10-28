@@ -16,8 +16,10 @@ export type RebaseActionLog = RebaseAction & {
 
 export const useRecursiveRebase = ({
     baseBranch,
+    endBranch,
 }: {
     baseBranch: string;
+    endBranch: string;
 }): UseRecursiveRebaseResult => {
     const git = useGit();
     const { currentTree } = useTree();
@@ -31,6 +33,7 @@ export const useRecursiveRebase = ({
             await recursiveRebase({
                 tree: currentTree,
                 baseBranch: baseBranch,
+                endBranch: endBranch,
                 events: {
                     rebased: (action, state) => {
                         if (state === 'STARTED') {
