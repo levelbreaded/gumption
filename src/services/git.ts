@@ -22,6 +22,15 @@ export interface GitService {
     }) => Promise<void>;
     isRebasing: () => Promise<boolean>;
     rebaseContinue: () => Promise<void>;
+    mergeBaseBranch: (branchA: string, branchB: string) => Promise<string>;
+    latestCommitFor: (branch: string) => Promise<string | null>;
+    needsRebaseOnto: (args: {
+        branch: string;
+        ontoBranch: string;
+    }) => Promise<boolean>;
+    isClosedOnRemote: (branch: string) => Promise<boolean>;
+    fetchPrune: () => Promise<void>;
+    pull: () => Promise<void>;
 }
 
 export const createGitService = ({
@@ -80,6 +89,76 @@ export const createGitService = ({
         },
         rebaseContinue: async () => {
             await gitEngine.rebase(['--continue']);
+        },
+        mergeBaseBranch: async (branchA: string, branchB: string) => {
+            const result = await gitEngine.raw([
+                'merge-base',
+                branchA,
+                branchB,
+            ]);
+            /*
+             * The result is the commit SHA of the most recent "ancestor" commit between both branches.
+             * Because this is a raw() command, it also includes a "\n" at the end of the commit SHA that we remove
+             */
+            const commonAncestorCommit = result.replace('\n', '');
+            return commonAncestorCommit;
+        },
+        latestCommitFor: async (branch: string) => {
+            const { latest } = await gitEngine.log([
+                '-n', // specify a number of commits to return
+                '1', // only return 1 (the latest)
+                branch,
+            ]);
+
+            return latest?.hash ?? null;
+        },
+        needsRebaseOnto: async ({
+            branch,
+            ontoBranch,
+        }: {
+            branch: string;
+            ontoBranch: string;
+        }) => {
+            const result = await gitEngine.raw([
+                'merge-base',
+                branch,
+                ontoBranch,
+            ]);
+            /*
+             * The result is the commit SHA of the most recent "ancestor" commit between both branches.
+             * Because this is a raw() command, it also includes a "\n" at the end of the commit SHA that we remove
+             */
+            const commonAncestorCommit = result.replace('\n', '');
+
+            const { latest } = await gitEngine.log([
+                '-n', // specify a number of commits to return
+                '1', // only return 1 (the latest)
+                ontoBranch,
+            ]);
+
+            const ontoBranchLatestHash = latest?.hash ?? null;
+
+            return ontoBranchLatestHash !== commonAncestorCommit;
+        },
+        isClosedOnRemote: async (branch: string) => {
+            const { all } = await gitEngine.branch(['-a']);
+            const remoteBranchName = `remotes/origin/${branch}`;
+
+            if (all.includes(remoteBranchName)) {
+                return false;
+            }
+
+            if (all.includes(branch)) {
+                return true;
+            }
+
+            return false;
+        },
+        fetchPrune: async () => {
+            await gitEngine.fetch(['--prune', 'origin']);
+        },
+        pull: async () => {
+            await gitEngine.pull(['--ff-only', '--prune']);
         },
     };
 };

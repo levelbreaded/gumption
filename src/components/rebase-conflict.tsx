@@ -15,6 +15,9 @@ export const RebaseConflict = () => {
                 3. Continue the rebase with{' '}
                 <Text color="cyan">gum continue</Text>
             </Text>
+            <Text color="yellow">
+                OR - Cancel with <Text color="cyan">git rebase --abort</Text>
+            </Text>
         </Box>
     );
 };

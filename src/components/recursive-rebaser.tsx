@@ -10,12 +10,14 @@ import { RebaseConflict } from './rebase-conflict.js';
 
 export const RecursiveRebaser = ({
     baseBranch,
+    endBranch,
     successStateNode,
 }: {
     baseBranch: string;
+    endBranch: string;
     successStateNode: ReactNode;
 }) => {
-    const result = useRecursiveRebase({ baseBranch });
+    const result = useRecursiveRebase({ baseBranch, endBranch });
 
     if (result.isError) {
         return <ErrorDisplay error={result.error} />;

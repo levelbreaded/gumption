@@ -58,6 +58,7 @@ const DoChangesCommit = ({
     return (
         <RecursiveRebaser
             baseBranch={currentBranch}
+            endBranch={currentBranch}
             successStateNode={
                 <Text color="green">Committed changes successfully</Text>
             }
