@@ -67,7 +67,7 @@ export const List = () => {
                             elements={[
                                 ...node.prefix,
                                 {
-                                    symbols: isCurrent ? '⊗' : '◯',
+                                    symbols: `${isCurrent ? '⊗' : '◯'}${node.suffix.length ? '─' : ''}`,
                                 },
                                 ...node.suffix,
                             ]}
@@ -218,9 +218,9 @@ const suffixFromNumChildren = ({
     return Array(length)
         .fill(null)
         .map((_, index) => {
-            return {
-                symbols: index === length - 1 ? '─┘' : '─┴',
-            };
+            if (index === length - 1) return { symbols: '┘' };
+            if (index === 0) return { symbols: '┴─' };
+            return { symbols: '┴─' };
         });
 };
 
