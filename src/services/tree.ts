@@ -79,10 +79,16 @@ const removeBranch = (
         throw Error('Cannot remove root branch');
     }
 
-    _saveTree(
-        tree.filter((b) => b.key !== branchToRemove.key),
-        deps
-    );
+    const removedBranchParent = branchToRemove.parent;
+    const treeWithBranchRemoved = tree
+        .filter((b) => b.key !== branchToRemove.key)
+        .map((b) => {
+            if (b.parent === branchToRemove.key)
+                return { ...b, parent: removedBranchParent };
+            return b;
+        });
+
+    _saveTree(treeWithBranchRemoved, deps);
 
     deps.setCurrentTree(_readTree(deps));
     return branchToRemove;

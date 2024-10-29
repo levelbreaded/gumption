@@ -1,7 +1,8 @@
 import ErrorDisplay from '../components/error-display.js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Action, useAction } from '../hooks/use-action.js';
 import { CommandConfig, CommandProps } from '../types.js';
+import { ConfirmStatement } from '../components/confirm-statement.js';
 import { Loading } from '../components/loading.js';
 import { RecursiveRebaser } from '../components/recursive-rebaser.js';
 import { SelectRootBranch } from '../components/select-root-branch.js';
@@ -37,10 +38,7 @@ const DoSync = ({
     rootBranchName: string;
     currentBranchName: string;
 }) => {
-    const result = useSyncAction({
-        rootBranchName,
-        currentBranchName,
-    });
+    const result = useSyncAction({ rootBranchName });
 
     if (result.isError) {
         return <ErrorDisplay error={result.error} />;
@@ -50,7 +48,30 @@ const DoSync = ({
         return <Loading />;
     }
 
-    // todo: prompt to delete branches
+    const { contestedBranch, deleteBranch, skipContestedBranch } = result;
+
+    if (contestedBranch) {
+        return (
+            <ConfirmStatement
+                statement={
+                    <Text>
+                        It seems like{' '}
+                        <Text color="yellow" bold>
+                            {contestedBranch}
+                        </Text>{' '}
+                        was deleted in the remote repository. Delete it locally?
+                    </Text>
+                }
+                onAccept={() => {
+                    if (contestedBranch) void deleteBranch(contestedBranch);
+                }}
+                onDeny={() => {
+                    if (contestedBranch) skipContestedBranch(contestedBranch);
+                }}
+            />
+        );
+    }
+
     return (
         <RecursiveRebaser
             baseBranch={rootBranchName}
@@ -60,21 +81,51 @@ const DoSync = ({
     );
 };
 
-type UseSyncActionResult = Action;
+type UseSyncActionResult = Action & {
+    deleteBranch: (branch: string) => Promise<void>;
+    skipContestedBranch: (branch: string) => void;
+    contestedBranch: string | undefined;
+};
+
 const useSyncAction = ({
-    currentBranchName,
     rootBranchName,
 }: {
-    currentBranchName: string;
     rootBranchName: string;
 }): UseSyncActionResult => {
     const git = useGit();
+    const { currentTree, removeBranch } = useTree();
+    const [allContestedBranches, setAllContestedBranches] = useState<string[]>(
+        []
+    );
+
+    const skipContestedBranch = useCallback((branch: string) => {
+        setAllContestedBranches((prev) => prev.filter((b) => b !== branch));
+    }, []);
+
+    const deleteBranch = useCallback(
+        async (branch: string) => {
+            // do the git branch delete first, since this is more error-prone
+            await git.branchDelete(branch);
+            removeBranch(branch);
+            skipContestedBranch(branch);
+        },
+        [git, skipContestedBranch]
+    );
 
     const performAction = useCallback(async () => {
+        // todo: unsure if this is the correct condition
+        if (!currentTree.length) return;
+
         await git.checkout(rootBranchName);
         await git.pull();
-        await git.checkout(currentBranchName);
-    }, [git]);
+
+        for (const node of currentTree) {
+            const closedOnRemote = await git.isClosedOnRemote(node.key);
+            if (closedOnRemote) {
+                setAllContestedBranches((prev) => [...prev, node.key]);
+            }
+        }
+    }, [git, currentTree]);
 
     const action = useAction({
         asyncAction: performAction,
@@ -82,6 +133,10 @@ const useSyncAction = ({
 
     return {
         ...action,
+        // always get the first one, we're filtering the array until it is empty
+        contestedBranch: allContestedBranches[0],
+        deleteBranch,
+        skipContestedBranch,
     } as UseSyncActionResult;
 };
 

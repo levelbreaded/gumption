@@ -97,6 +97,6 @@ This is v0.2.X
 
 This is v0.3.X
 
-13. Build `sync` 🟠
+13. Build `sync` ✅* (tentative, needs testing)
 
 This is v1.
