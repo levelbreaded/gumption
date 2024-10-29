@@ -31,6 +31,7 @@ export interface GitService {
     isClosedOnRemote: (branch: string) => Promise<boolean>;
     fetchPrune: () => Promise<void>;
     pull: () => Promise<void>;
+    branchDelete: (branch: string) => Promise<void>;
 }
 
 export const createGitService = ({
@@ -141,14 +142,18 @@ export const createGitService = ({
             return ontoBranchLatestHash !== commonAncestorCommit;
         },
         isClosedOnRemote: async (branch: string) => {
-            const { all } = await gitEngine.branch(['-a']);
+            // this is only accurate is "git fetch -p" or some equivalent has been run
+            // recently enough to have up-to-date information in the refs
+            const { all, branches } = await gitEngine.branch(['-a', '-vv']);
             const remoteBranchName = `remotes/origin/${branch}`;
 
             if (all.includes(remoteBranchName)) {
+                // if remote is still in the ref, then it's still a living remote branch in the upstream
                 return false;
             }
 
-            if (all.includes(branch)) {
+            const label: string = branches?.[branch]?.label ?? '';
+            if (label.includes(`[origin/${branch}: gone]`)) {
                 return true;
             }
 
@@ -159,6 +164,9 @@ export const createGitService = ({
         },
         pull: async () => {
             await gitEngine.pull(['--ff-only', '--prune']);
+        },
+        branchDelete: async (branch: string) => {
+            await gitEngine.deleteLocalBranch(branch, true);
         },
     };
 };

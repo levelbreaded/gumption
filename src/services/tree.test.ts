@@ -105,12 +105,12 @@ describe('tree service is working', () => {
         expect(get()).to.deep.equal([
             { key: 'root', parent: null },
             { key: 'branch_a', parent: 'root' },
-            { key: 'branch_b_a', parent: 'branch_b' },
-            { key: 'branch_b_b', parent: 'branch_b' },
+            { key: 'branch_b_a', parent: 'root' },
+            { key: 'branch_b_b', parent: 'root' },
         ]);
     });
 
-    it('can remove parent branches without removing the child branches', () => {
+    it("removes parent branches without removing the child branches, but reattaches them to tree at the removed branch's parent", () => {
         const { registerRoot, attachTo, removeBranch, get } =
             createTreeService();
 
@@ -135,7 +135,7 @@ describe('tree service is working', () => {
         expect(get()).to.deep.equal([
             { key: 'root', parent: null },
             { key: 'branch_b', parent: 'root' },
-            { key: 'branch_a_a', parent: 'branch_a' },
+            { key: 'branch_a_a', parent: 'root' },
             { key: 'branch_b_a', parent: 'branch_b' },
             { key: 'branch_b_b', parent: 'branch_b' },
         ]);
@@ -144,9 +144,9 @@ describe('tree service is working', () => {
 
         expect(get()).to.deep.equal([
             { key: 'root', parent: null },
-            { key: 'branch_a_a', parent: 'branch_a' },
-            { key: 'branch_b_a', parent: 'branch_b' },
-            { key: 'branch_b_b', parent: 'branch_b' },
+            { key: 'branch_a_a', parent: 'root' },
+            { key: 'branch_b_a', parent: 'root' },
+            { key: 'branch_b_b', parent: 'root' },
         ]);
     });
 });
