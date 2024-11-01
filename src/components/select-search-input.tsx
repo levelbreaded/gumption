@@ -1,6 +1,7 @@
 import GumptionItemComponent from './gumption-item-component.js';
 import React, { useMemo, useState } from 'react';
 import SelectInput from 'ink-select-input';
+import { Blinker } from './blinker.js';
 import { Box, Text, useInput } from 'ink';
 
 export const SearchSelectInput = ({
@@ -37,6 +38,7 @@ export const SearchSelectInput = ({
             <Text>
                 <Text italic={!search.length}>
                     🔎&nbsp;
+                    <Blinker />
                     {search.length ? search : '(type to search)'}
                 </Text>
             </Text>
