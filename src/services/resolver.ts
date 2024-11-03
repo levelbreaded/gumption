@@ -48,7 +48,8 @@ export const recursiveRebase = async ({
         rebasedEventHandler(rebaseAction, 'COMPLETED');
     }
 
-    await git.checkout(endBranch);
+    const rootBranchName = tree.find((b) => b.parent === null)?.key;
+    await git.checkout(endBranch, { fallbackBranch: rootBranchName });
     completeEventHandler();
 };
 

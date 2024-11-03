@@ -12,7 +12,10 @@ export interface GitService {
     branchLocal: () => Promise<ReturnType<SimpleGit['branchLocal']>>;
     currentBranch: () => Promise<string>;
     listBranches: () => Promise<string[]>;
-    checkout: (branch: string) => Promise<ReturnType<SimpleGit['checkout']>>;
+    checkout: (
+        branch: string,
+        options?: { fallbackBranch?: string }
+    ) => Promise<ReturnType<SimpleGit['checkout']>>;
     addAllFiles: () => Promise<void>;
     commit: (args: { message: string }) => Promise<void>;
     createBranch: (args: { branchName: string }) => Promise<void>;
@@ -32,6 +35,7 @@ export interface GitService {
     fetchPrune: () => Promise<void>;
     pull: () => Promise<void>;
     branchDelete: (branch: string) => Promise<void>;
+    branchExistsLocally: (branch: string) => Promise<boolean>;
 }
 
 export const createGitService = ({
@@ -40,6 +44,16 @@ export const createGitService = ({
     options: Partial<SimpleGitOptions>;
 }): GitService => {
     const gitEngine = simpleGit(options);
+
+    async function branchExistsLocally(branch: string) {
+        // todo: we should probably be using this function a lot more lmao
+        const branchRef = await gitEngine.raw([
+            'show-ref',
+            `refs/heads/${branch}`,
+        ]);
+        return Boolean(branchRef);
+    }
+
     return {
         _git: gitEngine,
         // @ts-expect-error - being weird about the return type
@@ -55,7 +69,17 @@ export const createGitService = ({
             return all;
         },
         // @ts-expect-error - being weird about the return type
-        checkout: async (branch: string) => {
+        checkout: async (
+            branch: string,
+            options?: {
+                fallbackBranch?: string;
+            }
+        ) => {
+            const _branchExistsLocally = await branchExistsLocally(branch);
+            if (!_branchExistsLocally && options?.fallbackBranch) {
+                return gitEngine.checkout(options.fallbackBranch);
+            }
+
             return gitEngine.checkout(branch);
         },
         addAllFiles: async () => {
@@ -89,7 +113,12 @@ export const createGitService = ({
             }
         },
         rebaseContinue: async () => {
-            await gitEngine.rebase(['--continue']);
+            await gitEngine.raw([
+                '-c',
+                'core.editor=true',
+                'rebase',
+                '--continue',
+            ]);
         },
         mergeBaseBranch: async (branchA: string, branchB: string) => {
             const result = await gitEngine.raw([
@@ -120,6 +149,13 @@ export const createGitService = ({
             branch: string;
             ontoBranch: string;
         }) => {
+            if (
+                !(await branchExistsLocally(branch)) ||
+                !(await branchExistsLocally(branch))
+            ) {
+                return false;
+            }
+
             const result = await gitEngine.raw([
                 'merge-base',
                 branch,
@@ -168,5 +204,6 @@ export const createGitService = ({
         branchDelete: async (branch: string) => {
             await gitEngine.deleteLocalBranch(branch, true);
         },
+        branchExistsLocally,
     };
 };

@@ -1,5 +1,5 @@
 import ErrorDisplay from '../components/error-display.js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Action, useAction } from '../hooks/use-action.js';
 import { CommandConfig, CommandProps } from '../types.js';
 import { ConfirmStatement } from '../components/confirm-statement.js';
@@ -93,10 +93,17 @@ const useSyncAction = ({
     rootBranchName: string;
 }): UseSyncActionResult => {
     const git = useGit();
-    const { currentTree, removeBranch } = useTree();
+    const { removeBranch, get } = useTree();
     const [allContestedBranches, setAllContestedBranches] = useState<string[]>(
         []
     );
+
+    /**
+     * We need a snapshot of the tree instead of "currentTree", because deleting branches while doing cleanup will
+     * cause the "currentTree" to change, which problematically tries to re-trigger the whole sync process in the
+     * middle, which causes errors.
+     */
+    const currentTreeSnapshot = useMemo(() => get(), []);
 
     const skipContestedBranch = useCallback((branch: string) => {
         setAllContestedBranches((prev) => prev.filter((b) => b !== branch));
@@ -114,18 +121,26 @@ const useSyncAction = ({
 
     const performAction = useCallback(async () => {
         // todo: unsure if this is the correct condition
-        if (!currentTree.length) return;
+        if (!currentTreeSnapshot.length) return;
 
         await git.checkout(rootBranchName);
         await git.pull();
+        const contestedBranches = [];
 
-        for (const node of currentTree) {
+        for (const node of currentTreeSnapshot) {
             const closedOnRemote = await git.isClosedOnRemote(node.key);
             if (closedOnRemote) {
-                setAllContestedBranches((prev) => [...prev, node.key]);
+                contestedBranches.push(node.key);
             }
         }
-    }, [git, currentTree]);
+
+        /**
+         * We need to update the state of contested branches all at once to prevent the user attempting to run the
+         * branch deletion function while a git.isClosedOnRemote() is running. Git does not allow multiple commands
+         * to be run in parallel and enforces this with an internal lockfile.
+         */
+        setAllContestedBranches(contestedBranches);
+    }, [git, currentTreeSnapshot]);
 
     const action = useAction({
         asyncAction: performAction,

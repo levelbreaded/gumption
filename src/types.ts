@@ -5,6 +5,8 @@ export type AsyncResult<T> =
     | { value: T; isLoading: false }
     | { value: undefined; isLoading: true };
 
+export type AsyncResultWithDefault<T> = { value: T; isLoading: boolean };
+
 export type SanitizeProps<
     T extends Record<string, unknown>,
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
