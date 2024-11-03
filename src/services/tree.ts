@@ -67,10 +67,18 @@ const moveOnto = (
 
 const removeBranch = (
     branch: string,
-    deps: { storeService: StoreService; setCurrentTree: SetTreeFunction }
+    deps: { storeService: StoreService; setCurrentTree: SetTreeFunction },
+    options?: { ignoreBranchDoesNotExist?: boolean }
 ): BranchNode | undefined => {
     const tree = _readTree(deps);
-    const branchToRemove = _findBranch({ branch, tree });
+    let branchToRemove: BranchNode;
+
+    try {
+        branchToRemove = _findBranch({ branch, tree });
+    } catch (e) {
+        if (options?.ignoreBranchDoesNotExist) return;
+        throw e;
+    }
 
     if (!branchToRemove) return;
 
@@ -204,7 +212,10 @@ export interface TreeService {
     registerRoot: (branch: string) => void;
     attachTo: (args: { newBranch: string; parent: string }) => void;
     moveOnto: (args: { branch: string; parent: string }) => void;
-    removeBranch: (branch: string) => void;
+    removeBranch: (
+        branch: string,
+        options?: { ignoreBranchDoesNotExist?: boolean }
+    ) => void;
     get: () => Tree;
     getRoot: () => BranchNode | undefined;
     ROOT: symbol;
@@ -229,8 +240,12 @@ export const createTreeService = (config?: TreeServiceConfig): TreeService => {
         moveOnto: (args) => {
             return moveOnto(args, { storeService, setCurrentTree });
         },
-        removeBranch: (branch) => {
-            return removeBranch(branch, { storeService, setCurrentTree });
+        removeBranch: (branch, options) => {
+            return removeBranch(
+                branch,
+                { storeService, setCurrentTree },
+                options
+            );
         },
         get: () => {
             return _readTree({ storeService, setCurrentTree });

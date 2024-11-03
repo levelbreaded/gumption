@@ -1,18 +1,12 @@
-import React, {
-    ReactNode,
-    createContext,
-    useCallback,
-    useContext,
-    useMemo,
-} from 'react';
+import React, { ReactNode, createContext, useContext, useMemo } from 'react';
 import {
     DisplayNode,
     getDisplayNodes,
     maxWidthFromDisplayNodes,
 } from '../utils/tree-display.js';
 import { treeToParentChildRecord } from '../utils/tree-helpers.js';
-import { useAsyncValue } from '../hooks/use-async-value.js';
-import { useGit } from '../hooks/use-git.js';
+import { useBranchNeedsRebaseRecord } from '../hooks/computed-values/use-branch-needs-rebase-record.js';
+import { useCleanCurrentTree } from '../hooks/computed-values/use-clean-current-tree.js';
 import { useTree } from '../hooks/use-tree.js';
 
 interface TreeDisplayContextType {
@@ -30,43 +24,23 @@ const TreeDisplayContext = createContext<TreeDisplayContextType>({
 });
 
 export const TreeDisplayProvider = ({ children }: { children: ReactNode }) => {
-    const git = useGit();
-    const { rootBranchName, currentTree } = useTree();
+    const { rootBranchName } = useTree();
+
+    const { value: currentTree, isLoading: isLoadingCurrentTree } =
+        useCleanCurrentTree();
+
     const treeParentChildRecord = useMemo(
         () => treeToParentChildRecord(currentTree),
         [currentTree]
     );
-
-    const getBranchNeedsRebaseRecord = useCallback(async () => {
-        const record: Record<string, boolean> = {};
-        await Promise.all(
-            currentTree.map(async (_node) => {
-                if (!_node.parent) return null;
-
-                record[_node.key] = await git.needsRebaseOnto({
-                    branch: _node.key,
-                    ontoBranch: _node.parent,
-                });
-                return null;
-            })
-        );
-        return record;
-    }, [currentTree, git.needsRebaseOnto]);
-
-    const branchNeedsRebaseRecordResult = useAsyncValue({
-        getValue: getBranchNeedsRebaseRecord,
-    });
-
-    const branchNeedsRebaseRecord = useMemo(() => {
-        if (branchNeedsRebaseRecordResult.isLoading)
-            return {} as Record<string, boolean>;
-
-        return branchNeedsRebaseRecordResult.value;
-    }, [branchNeedsRebaseRecordResult]);
+    const {
+        value: branchNeedsRebaseRecord,
+        isLoading: isLoadingBranchNeedsRebaseRecord,
+    } = useBranchNeedsRebaseRecord({ currentTree });
 
     const isLoading = useMemo(() => {
-        return branchNeedsRebaseRecordResult.isLoading;
-    }, [branchNeedsRebaseRecordResult]);
+        return isLoadingBranchNeedsRebaseRecord || isLoadingCurrentTree;
+    }, [isLoadingBranchNeedsRebaseRecord, isLoadingCurrentTree]);
 
     const nodes: DisplayNode[] = rootBranchName
         ? getDisplayNodes({
