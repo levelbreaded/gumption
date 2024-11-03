@@ -41,6 +41,7 @@ export const recursiveRebase = async ({
 
     for (const rebaseAction of rebaseActions) {
         rebasedEventHandler(rebaseAction, 'STARTED');
+        // todo: probably only do this if it's needed though, right?
         await git.rebaseBranchOnto({
             branch: rebaseAction.branch,
             ontoBranch: rebaseAction.ontoBranch,

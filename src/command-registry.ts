@@ -10,6 +10,7 @@ import Hop, { hopConfig } from './commands/hop.js';
 import Sync, { syncConfig } from './commands/sync.js';
 import { CommandGroup } from './types.js';
 import { List, listConfig } from './commands/list.js';
+import { Move, moveConfig } from './commands/move.js';
 import { Switch, switchConfig } from './commands/switch.js';
 
 export const REGISTERED_COMMANDS: CommandGroup = {
@@ -36,6 +37,10 @@ export const REGISTERED_COMMANDS: CommandGroup = {
     switch: {
         component: Switch,
         config: switchConfig,
+    },
+    move: {
+        component: Move,
+        config: moveConfig,
     },
     continue: {
         component: Continue,
