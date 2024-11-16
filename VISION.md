@@ -98,5 +98,7 @@ This is v0.2.X
 This is v0.3.X
 
 13. Build `sync` ✅
+14. Build `force push`
+15. Build `cleanup`
 
 This is v1.
