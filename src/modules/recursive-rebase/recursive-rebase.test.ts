@@ -33,32 +33,32 @@ describe('rebase actions are planned correctly', () => {
 
         const expected = [
             {
-                branch: 'branch_a',
-                ontoBranch: 'root',
+                branchName: 'branch_a',
+                ontoBranchName: 'root',
             },
             {
-                branch: 'branch_a_a',
-                ontoBranch: 'branch_a',
+                branchName: 'branch_a_a',
+                ontoBranchName: 'branch_a',
             },
             {
-                branch: 'branch_a_a_a',
-                ontoBranch: 'branch_a_a',
+                branchName: 'branch_a_a_a',
+                ontoBranchName: 'branch_a_a',
             },
             {
-                branch: 'branch_a_b',
-                ontoBranch: 'branch_a',
+                branchName: 'branch_a_b',
+                ontoBranchName: 'branch_a',
             },
             {
-                branch: 'branch_b',
-                ontoBranch: 'root',
+                branchName: 'branch_b',
+                ontoBranchName: 'root',
             },
             {
-                branch: 'branch_b_a',
-                ontoBranch: 'branch_b',
+                branchName: 'branch_b_a',
+                ontoBranchName: 'branch_b',
             },
             {
-                branch: 'branch_b_b',
-                ontoBranch: 'branch_b',
+                branchName: 'branch_b_b',
+                ontoBranchName: 'branch_b',
             },
         ];
 
