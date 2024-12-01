@@ -1,37 +1,23 @@
 import React from 'react';
 import { Box } from 'ink';
 import { CommandConfig } from '../types.js';
-import { Loading } from '../components/loading.js';
-import { SelectRootBranch } from '../components/select-root-branch.js';
 import { TreeBranchDisplay } from '../utils/tree-display.js';
 import {
     TreeDisplayProvider,
     useTreeDisplay,
 } from '../contexts/tree-display.context.js';
-import { useGitHelpers } from '../hooks/use-git-helpers.js';
-import { useTree } from '../hooks/use-tree.js';
+import { git } from '../modules/git.js';
 
 export const List = () => {
-    const { currentBranch } = useGitHelpers();
-    const { rootBranchName } = useTree();
-
-    if (!rootBranchName) {
-        return <SelectRootBranch />;
-    }
-
-    if (currentBranch.isLoading) {
-        return <Loading />;
-    }
-
     return (
-        <TreeDisplayProvider>
-            <DoList currentBranch={currentBranch.value} />
+        <TreeDisplayProvider options={{ includeBranchNeedsRebaseRecord: true }}>
+            <DoList currentBranchName={git.getCurrentBranchName()} />
         </TreeDisplayProvider>
     );
 };
 
-const DoList = ({ currentBranch }: { currentBranch: string }) => {
-    const { nodes, maxWidth, branchNeedsRebaseRecord } = useTreeDisplay();
+const DoList = ({ currentBranchName }: { currentBranchName: string }) => {
+    const { nodes, maxWidth, branchNeedsRestackRecord } = useTreeDisplay();
     return (
         <Box flexDirection="column" gap={0}>
             {nodes.map((node) => {
@@ -39,10 +25,10 @@ const DoList = ({ currentBranch }: { currentBranch: string }) => {
                     <TreeBranchDisplay
                         key={node.name}
                         node={node}
-                        isCurrent={currentBranch === node.name}
+                        isCurrent={currentBranchName === node.name}
                         maxWidth={maxWidth}
-                        needsRebase={
-                            branchNeedsRebaseRecord[node.name] ?? false
+                        needsRestack={
+                            branchNeedsRestackRecord[node.name] ?? false
                         }
                         underline={false}
                     />

@@ -14,5 +14,5 @@ CLI for stacked Git commands
 
 3.  Link the package to your global npm packages:
     ```bash
-    $ npm link && npm install --global gumption
+    $ npm link & npm install --global gumption
     ```

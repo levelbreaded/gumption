@@ -1,72 +1,38 @@
-import ErrorDisplay from '../components/error-display.js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Action, useAction } from '../hooks/use-action.js';
+import React, { useCallback, useEffect, useState } from 'react';
 import { CommandConfig, CommandProps } from '../types.js';
 import { ConfirmStatement } from '../components/confirm-statement.js';
-import { Loading } from '../components/loading.js';
 import { RecursiveRebaser } from '../components/recursive-rebaser.js';
-import { SelectRootBranch } from '../components/select-root-branch.js';
 import { Text } from 'ink';
-import { useGit } from '../hooks/use-git.js';
-import { useGitHelpers } from '../hooks/use-git-helpers.js';
-import { useTree } from '../hooks/use-tree.js';
+import { engine } from '../modules/engine.js';
+import { getRootBranch } from '../modules/branch/wrapper.js';
+import { git } from '../modules/git.js';
+import { tree } from '../modules/tree.js';
 
 const Sync = (_: CommandProps) => {
-    const { currentBranch } = useGitHelpers();
-    const { rootBranchName } = useTree();
+    const rootBranch = getRootBranch();
+    const originalBranchName = git.getCurrentBranchName();
+    const { contestedBranchName, deleteBranch, skipContestedBranch } =
+        useSyncAction({ rootBranchName: rootBranch.name });
 
-    if (!rootBranchName) {
-        return <SelectRootBranch />;
-    }
-
-    if (currentBranch.isLoading) {
-        return <Loading />;
-    }
-
-    return (
-        <DoSync
-            rootBranchName={rootBranchName}
-            currentBranchName={currentBranch.value}
-        />
-    );
-};
-
-const DoSync = ({
-    rootBranchName,
-    currentBranchName,
-}: {
-    rootBranchName: string;
-    currentBranchName: string;
-}) => {
-    const result = useSyncAction({ rootBranchName });
-
-    if (result.isError) {
-        return <ErrorDisplay error={result.error} />;
-    }
-
-    if (result.isLoading) {
-        return <Loading />;
-    }
-
-    const { contestedBranch, deleteBranch, skipContestedBranch } = result;
-
-    if (contestedBranch) {
+    if (contestedBranchName) {
         return (
             <ConfirmStatement
                 statement={
                     <Text>
                         It seems like{' '}
                         <Text color="yellow" bold>
-                            {contestedBranch}
+                            {contestedBranchName}
                         </Text>{' '}
                         was deleted in the remote repository. Delete it locally?
                     </Text>
                 }
                 onAccept={() => {
-                    if (contestedBranch) void deleteBranch(contestedBranch);
+                    if (contestedBranchName)
+                        void deleteBranch(contestedBranchName);
                 }}
                 onDeny={() => {
-                    if (contestedBranch) skipContestedBranch(contestedBranch);
+                    if (contestedBranchName)
+                        skipContestedBranch(contestedBranchName);
                 }}
             />
         );
@@ -74,17 +40,17 @@ const DoSync = ({
 
     return (
         <RecursiveRebaser
-            baseBranch={rootBranchName}
-            endBranch={currentBranchName}
+            baseBranchName={rootBranch.name}
+            endBranchName={originalBranchName}
             successStateNode={<Text color="green">Synced successfully</Text>}
         />
     );
 };
 
-type UseSyncActionResult = Action & {
-    deleteBranch: (branch: string) => Promise<void>;
-    skipContestedBranch: (branch: string) => void;
-    contestedBranch: string | undefined;
+type UseSyncActionResult = {
+    deleteBranch: (branchName: string) => Promise<void>;
+    skipContestedBranch: (branchName: string) => void;
+    contestedBranchName: string | undefined;
 };
 
 const useSyncAction = ({
@@ -92,64 +58,45 @@ const useSyncAction = ({
 }: {
     rootBranchName: string;
 }): UseSyncActionResult => {
-    const git = useGit();
-    const { removeBranch, get } = useTree();
-    const [allContestedBranches, setAllContestedBranches] = useState<string[]>(
-        []
-    );
+    const currentTree = tree.getTree();
+    const [allContestedBranchNames, setAllContestedBranchNames] = useState<
+        string[]
+    >([]);
 
-    /**
-     * We need a snapshot of the tree instead of "currentTree", because deleting branches while doing cleanup will
-     * cause the "currentTree" to change, which problematically tries to re-trigger the whole sync process in the
-     * middle, which causes errors.
-     */
-    const currentTreeSnapshot = useMemo(() => get(), []);
-
-    const skipContestedBranch = useCallback((branch: string) => {
-        setAllContestedBranches((prev) => prev.filter((b) => b !== branch));
+    const skipContestedBranch = useCallback((branchName: string) => {
+        setAllContestedBranchNames((prev) =>
+            prev.filter((b) => b !== branchName)
+        );
     }, []);
 
     const deleteBranch = useCallback(
-        async (branch: string) => {
-            // do the git branch delete first, since this is more error-prone
-            await git.branchDelete(branch);
-            removeBranch(branch);
-            skipContestedBranch(branch);
+        (branchName: string) => {
+            engine.deleteTrackedBranch({ branchName });
+            skipContestedBranch(branchName);
         },
-        [git, skipContestedBranch]
+        [skipContestedBranch]
     );
 
-    const performAction = useCallback(async () => {
-        // todo: unsure if this is the correct condition
-        if (!currentTreeSnapshot.length) return;
+    useEffect(() => {
+        git.checkoutBranch(rootBranchName);
+        git.pull({ prune: true });
+        const _contestedBranchNames = [];
 
-        await git.checkout(rootBranchName);
-        await git.pull();
-        const contestedBranches = [];
-
-        for (const node of currentTreeSnapshot) {
-            const closedOnRemote = await git.isClosedOnRemote(node.key);
+        for (const _branch of currentTree) {
+            const closedOnRemote = git.isClosedOnRemote({
+                branchName: _branch.name,
+            });
             if (closedOnRemote) {
-                contestedBranches.push(node.key);
+                _contestedBranchNames.push(_branch.name);
             }
         }
 
-        /**
-         * We need to update the state of contested branches all at once to prevent the user attempting to run the
-         * branch deletion function while a git.isClosedOnRemote() is running. Git does not allow multiple commands
-         * to be run in parallel and enforces this with an internal lockfile.
-         */
-        setAllContestedBranches(contestedBranches);
-    }, [git, currentTreeSnapshot]);
-
-    const action = useAction({
-        asyncAction: performAction,
-    });
+        setAllContestedBranchNames(_contestedBranchNames);
+    }, []);
 
     return {
-        ...action,
         // always get the first one, we're filtering the array until it is empty
-        contestedBranch: allContestedBranches[0],
+        contestedBranchName: allContestedBranchNames[0],
         deleteBranch,
         skipContestedBranch,
     } as UseSyncActionResult;

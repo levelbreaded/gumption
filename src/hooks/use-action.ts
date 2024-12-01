@@ -1,56 +1,28 @@
 import { useEffect, useState } from 'react';
 
-export const useAction = ({
-    asyncAction,
+export type ActionState<TResult extends object | void = void> =
+    | {
+          isComplete: true;
+          data: TResult;
+      }
+    | { isComplete: false };
+
+export const useAction = <T extends object | void = void>({
+    func,
 }: {
-    asyncAction: () => Promise<void>;
-}): Action => {
-    const [state, setState] = useState<State>({ type: 'LOADING' });
+    func: () => T;
+}) => {
+    const [state, setState] = useState<ActionState<T>>({
+        isComplete: false,
+    });
 
     useEffect(() => {
-        setState({ type: 'LOADING' });
-        asyncAction()
-            .then(() => setState({ type: 'COMPLETE' }))
-            .catch((e: Error) => {
-                setState({ type: 'ERROR', error: e });
-            });
-    }, [asyncAction]);
+        const result = func();
+        setState({
+            isComplete: true,
+            data: result,
+        });
+    }, []);
 
-    if (state.type === 'ERROR') {
-        return {
-            isLoading: false,
-            isError: true,
-            error: state.error,
-        };
-    }
-
-    return {
-        isLoading: state.type === 'LOADING',
-        isError: false,
-        error: undefined,
-    };
+    return state;
 };
-
-export type Action =
-    | {
-          isLoading: boolean;
-          isError: false;
-          error: undefined;
-      }
-    | {
-          isLoading: boolean;
-          isError: true;
-          error: Error;
-      };
-
-export type State =
-    | {
-          type: 'LOADING';
-      }
-    | {
-          type: 'COMPLETE';
-      }
-    | {
-          type: 'ERROR';
-          error: Error;
-      };
