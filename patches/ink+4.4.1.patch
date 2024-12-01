@@ -1,0 +1,42 @@
+diff --git a/node_modules/ink/build/hooks/use-input.js b/node_modules/ink/build/hooks/use-input.js
+index 38af918..d1764f0 100644
+--- a/node_modules/ink/build/hooks/use-input.js
++++ b/node_modules/ink/build/hooks/use-input.js
+@@ -1,4 +1,4 @@
+-import { useEffect } from 'react';
++import { useEffect, useState } from 'react';
+ import { isUpperCase } from 'is-upper-case';
+ import parseKeypress, { nonAlphanumericKeys } from '../parse-keypress.js';
+ import reconciler from '../reconciler.js';
+@@ -30,6 +30,14 @@ import useStdin from './use-stdin.js';
+ const useInput = (inputHandler, options = {}) => {
+     // eslint-disable-next-line @typescript-eslint/naming-convention
+     const { stdin, setRawMode, internal_exitOnCtrlC, internal_eventEmitter } = useStdin();
++
++	const [errorState, setErrorState] = useState({ hasError: false });
++
++	useEffect(() => {
++		if (!errorState.hasError) return;
++		throw errorState.error;
++	}, [errorState])
++
+     useEffect(() => {
+         if (options.isActive === false) {
+             return;
+@@ -83,9 +91,13 @@ const useInput = (inputHandler, options = {}) => {
+             if (!(input === 'c' && key.ctrl) || !internal_exitOnCtrlC) {
+                 // @ts-expect-error TypeScript types for `batchedUpdates` require an argument, but React's codebase doesn't provide it and it works without it as exepected.
+                 reconciler.batchedUpdates(() => {
+-                    inputHandler(input, key);
+-                });
+-            }
++					try {
++						inputHandler(input, key);
++					} catch (e) {
++						setErrorState({ hasError: true, error: e })
++					}
++				});
++			}
+         };
+         internal_eventEmitter?.on('input', handleData);
+         return () => {

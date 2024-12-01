@@ -7,13 +7,13 @@ export const TreeBranchDisplay = ({
     node,
     isCurrent,
     maxWidth,
-    needsRebase,
+    needsRestack,
     underline,
 }: {
     node: DisplayNode;
     isCurrent: boolean;
     maxWidth: number;
-    needsRebase: boolean;
+    needsRestack: boolean;
     underline: boolean;
 }) => {
     const style = styleMap[node.prefix.length % styleMap.length] as TextStyle;
@@ -33,7 +33,7 @@ export const TreeBranchDisplay = ({
             <Text color={style.color} dimColor={style.dimColor}>
                 {isCurrent ? ' 👉 ' : ''}
                 {node.name}{' '}
-                {needsRebase && <Text color="white">(Needs rebase)</Text>}
+                {needsRestack && <Text color="white">(Needs restack)</Text>}
             </Text>
         </Text>
     );
@@ -94,14 +94,14 @@ const Spaces = ({ count }: { count: number }) => {
 };
 
 export const getDisplayNodes = ({
-    record,
+    treeParentChildRecord,
     branchName,
     childIndex = 0,
     parentPrefix = [],
     parentWidth = 0,
     depth = 0,
 }: {
-    record: Record<string, string[]>;
+    treeParentChildRecord: Record<string, string[]>;
     branchName: string;
     childIndex?: number;
     parentPrefix?: DisplayElement[];
@@ -109,7 +109,7 @@ export const getDisplayNodes = ({
     depth?: number;
 }): DisplayNode[] => {
     const prefix = [...parentPrefix, ...prefixFromChildIndex({ childIndex })];
-    const children = record[branchName] ?? [];
+    const children = treeParentChildRecord[branchName] ?? [];
     const suffix = suffixFromNumChildren({
         numChildren: children.length,
     });
@@ -120,7 +120,7 @@ export const getDisplayNodes = ({
     let nodes: DisplayNode[] = [];
     children.forEach((childBranch, index) => {
         const childNodes = getDisplayNodes({
-            record,
+            treeParentChildRecord,
             branchName: childBranch,
             childIndex: index,
             parentPrefix: prefix,

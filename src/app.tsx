@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
+import { GumptionErrorBoundary } from './components/gumption-error-boundary.js';
 import { type Result } from 'meow';
 import { findCommand, getCli } from './utils/commands.js';
 
@@ -50,5 +51,9 @@ export default function App({ cli: _cli }: Props) {
 
     const CommandHandlerComponent = command.component;
 
-    return <CommandHandlerComponent cli={cli} input={cli.input} />;
+    return (
+        <GumptionErrorBoundary>
+            <CommandHandlerComponent cli={cli} input={cli.input} />
+        </GumptionErrorBoundary>
+    );
 }

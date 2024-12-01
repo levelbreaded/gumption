@@ -1,53 +1,47 @@
-import React, { ReactNode, createContext, useContext, useMemo } from 'react';
+import React, { ReactNode, createContext, useContext } from 'react';
 import {
     DisplayNode,
     getDisplayNodes,
     maxWidthFromDisplayNodes,
 } from '../utils/tree-display.js';
-import { treeToParentChildRecord } from '../utils/tree-helpers.js';
-import { useBranchNeedsRebaseRecord } from '../hooks/computed-values/use-branch-needs-rebase-record.js';
-import { useCleanCurrentTree } from '../hooks/computed-values/use-clean-current-tree.js';
-import { useTree } from '../hooks/use-tree.js';
+import { getRootBranch } from '../modules/branch/wrapper.js';
+import { tree, treeToParentChildRecord } from '../modules/tree.js';
+import { useBranchNeedsRestackRecord } from '../hooks/use-branch-needs-restack-record.js';
 
 interface TreeDisplayContextType {
     maxWidth: number;
     nodes: DisplayNode[];
-    branchNeedsRebaseRecord: Record<string, boolean>;
-    isLoading: boolean;
+    branchNeedsRestackRecord: Record<string, boolean>;
 }
 
 const TreeDisplayContext = createContext<TreeDisplayContextType>({
     maxWidth: 0,
     nodes: [],
-    branchNeedsRebaseRecord: {},
-    isLoading: true,
+    branchNeedsRestackRecord: {},
 });
 
-export const TreeDisplayProvider = ({ children }: { children: ReactNode }) => {
-    const { rootBranchName } = useTree();
-
-    const { value: currentTree, isLoading: isLoadingCurrentTree } =
-        useCleanCurrentTree();
-
-    const treeParentChildRecord = useMemo(
-        () => treeToParentChildRecord(currentTree),
-        [currentTree]
-    );
-    const {
-        value: branchNeedsRebaseRecord,
-        isLoading: isLoadingBranchNeedsRebaseRecord,
-    } = useBranchNeedsRebaseRecord({ currentTree });
-
-    const isLoading = useMemo(() => {
-        return isLoadingBranchNeedsRebaseRecord || isLoadingCurrentTree;
-    }, [isLoadingBranchNeedsRebaseRecord, isLoadingCurrentTree]);
+export const TreeDisplayProvider = ({
+    children,
+    options,
+}: {
+    children: ReactNode;
+    options?: { includeBranchNeedsRebaseRecord?: boolean };
+}) => {
+    const rootBranchName = getRootBranch().name;
+    const _tree = tree.getTree();
+    const treeParentChildRecord = treeToParentChildRecord(_tree);
+    const branchNeedsRestackRecord = useBranchNeedsRestackRecord({
+        tree: _tree,
+        enabled: Boolean(options?.includeBranchNeedsRebaseRecord),
+    });
 
     const nodes: DisplayNode[] = rootBranchName
         ? getDisplayNodes({
-              record: treeParentChildRecord,
+              treeParentChildRecord,
               branchName: rootBranchName,
           })
         : [];
+
     const maxWidth = maxWidthFromDisplayNodes({ displayNodes: nodes });
 
     return (
@@ -55,8 +49,7 @@ export const TreeDisplayProvider = ({ children }: { children: ReactNode }) => {
             value={{
                 maxWidth,
                 nodes,
-                branchNeedsRebaseRecord,
-                isLoading,
+                branchNeedsRestackRecord,
             }}
         >
             {children}

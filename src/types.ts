@@ -1,11 +1,9 @@
 import { ComponentType } from 'react';
 import { Result } from 'meow';
 
-export type AsyncResult<T> =
-    | { value: T; isLoading: false }
-    | { value: undefined; isLoading: true };
-
-export type AsyncResultWithDefault<T> = { value: T; isLoading: boolean };
+export type DeepNullable<T> = {
+    [P in keyof T]: T[P] | null;
+};
 
 export type SanitizeProps<
     T extends Record<string, unknown>,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getRebaseActions } from './resolver.js';
+import { getRebaseActions } from './recursive-rebase.js';
 
 describe('rebase actions are planned correctly', () => {
     it('returns rebase actions at all', () => {
@@ -9,7 +9,7 @@ describe('rebase actions are planned correctly', () => {
         expect(
             getRebaseActions({
                 parentChildRecord: record,
-                baseBranch: 'root',
+                baseBranchName: 'root',
             }).length
         ).to.be.greaterThan(0);
     });
@@ -18,7 +18,7 @@ describe('rebase actions are planned correctly', () => {
         expect(
             getRebaseActions({
                 parentChildRecord: {},
-                baseBranch: 'branch_that_doesnt_exist',
+                baseBranchName: 'branch_that_doesnt_exist',
             })
         ).to.deep.equal([]);
     });
@@ -33,39 +33,39 @@ describe('rebase actions are planned correctly', () => {
 
         const expected = [
             {
-                branch: 'branch_a',
-                ontoBranch: 'root',
+                branchName: 'branch_a',
+                ontoBranchName: 'root',
             },
             {
-                branch: 'branch_a_a',
-                ontoBranch: 'branch_a',
+                branchName: 'branch_a_a',
+                ontoBranchName: 'branch_a',
             },
             {
-                branch: 'branch_a_a_a',
-                ontoBranch: 'branch_a_a',
+                branchName: 'branch_a_a_a',
+                ontoBranchName: 'branch_a_a',
             },
             {
-                branch: 'branch_a_b',
-                ontoBranch: 'branch_a',
+                branchName: 'branch_a_b',
+                ontoBranchName: 'branch_a',
             },
             {
-                branch: 'branch_b',
-                ontoBranch: 'root',
+                branchName: 'branch_b',
+                ontoBranchName: 'root',
             },
             {
-                branch: 'branch_b_a',
-                ontoBranch: 'branch_b',
+                branchName: 'branch_b_a',
+                ontoBranchName: 'branch_b',
             },
             {
-                branch: 'branch_b_b',
-                ontoBranch: 'branch_b',
+                branchName: 'branch_b_b',
+                ontoBranchName: 'branch_b',
             },
         ];
 
         expect(
             getRebaseActions({
                 parentChildRecord: record,
-                baseBranch: 'root',
+                baseBranchName: 'root',
             })
         ).to.deep.equal(expected);
     });
@@ -74,7 +74,7 @@ describe('rebase actions are planned correctly', () => {
         expect(
             getRebaseActions({
                 parentChildRecord: { root: ['root'] },
-                baseBranch: 'root',
+                baseBranchName: 'root',
             })
         ).to.deep.equal(
             [],

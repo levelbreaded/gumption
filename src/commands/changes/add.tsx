@@ -1,39 +1,24 @@
-import ErrorDisplay from '../../components/error-display.js';
-import React, { useCallback } from 'react';
-import { Action, useAction } from '../../hooks/use-action.js';
+import React from 'react';
 import { CommandConfig, CommandProps } from '../../types.js';
-import { Loading } from '../../components/loading.js';
 import { Text } from 'ink';
-import { useGit } from '../../hooks/use-git.js';
+import { git } from '../../modules/git.js';
+import { useAction } from '../../hooks/use-action.js';
 
 const ChangedAdd = ({}: CommandProps) => {
-    const result = useChangesAdd();
+    const result = useAction({
+        func: () => {
+            git.assertInWorkTree();
+            git.stageAllChanges();
+        },
+    });
 
-    if (result.isError) {
-        return <ErrorDisplay error={result.error} />;
-    }
-
-    if (result.isLoading) {
-        return <Loading />;
-    }
+    if (!result.isComplete) return null;
 
     return (
         <Text bold color="green">
             Staged all changes
         </Text>
     );
-};
-
-const useChangesAdd = (): Action => {
-    const git = useGit();
-
-    const performAction = useCallback(async () => {
-        await git.addAllFiles();
-    }, [git]);
-
-    return useAction({
-        asyncAction: performAction,
-    });
 };
 
 export const changesAddConfig: CommandConfig = {

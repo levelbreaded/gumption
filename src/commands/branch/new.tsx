@@ -1,6 +1,4 @@
-import ErrorDisplay from '../../components/error-display.js';
-import React, { useCallback } from 'react';
-import { Action, useAction } from '../../hooks/use-action.js';
+import React from 'react';
 import {
     CommandConfig,
     CommandProps,
@@ -8,89 +6,50 @@ import {
     Valid,
 } from '../../types.js';
 import { Loading } from '../../components/loading.js';
-import { SelectRootBranch } from '../../components/select-root-branch.js';
 import { Text } from 'ink';
-import { UntrackedBranch } from '../../components/untracked-branch.js';
+import {
+    assertBranchNameExists,
+    assertCurrentHasDiff,
+} from '../../modules/branch/assertions.js';
+import { engine } from '../../modules/engine.js';
+import { git } from '../../modules/git.js';
 import { safeBranchNameFromCommitMessage } from '../../utils/naming.js';
-import { useGit } from '../../hooks/use-git.js';
-import { useTree } from '../../hooks/use-tree.js';
+import { useAction } from '../../hooks/use-action.js';
 
 const BranchNew = (props: CommandProps) => {
-    const { rootBranchName, isCurrentBranchTracked } = useTree();
-
-    if (!rootBranchName) {
-        return <SelectRootBranch />;
-    }
-
-    if (!isCurrentBranchTracked) {
-        return <UntrackedBranch />;
-    }
-
-    return <DoBranchNew {...props} />;
-};
-
-const DoBranchNew = (props: CommandProps) => {
     const args = branchNewConfig.getProps(props) as Valid<
         PropSanitationResult<CommandArgs>
     >;
     const { commitMessage } = args.props;
 
-    const result = useBranchNew({
-        message: commitMessage,
+    const result = useAction<{ newBranchName: string }>({
+        func: () => {
+            const newBranchName =
+                safeBranchNameFromCommitMessage(commitMessage);
+            const branchBeforeName = git.getCurrentBranchName();
+            assertCurrentHasDiff();
+            git.createBranch({ branchName: newBranchName });
+            assertBranchNameExists(newBranchName);
+            git.checkoutBranch(newBranchName);
+            git.stageAllChanges();
+            git.commit({ message: commitMessage });
+
+            engine.trackBranch({
+                branchName: newBranchName,
+                parentBranchName: branchBeforeName,
+            });
+
+            return { newBranchName };
+        },
     });
 
-    if (result.isError) {
-        return <ErrorDisplay error={result.error} />;
-    }
-
-    if (result.isLoading) {
-        return <Loading />;
-    }
+    if (!result.isComplete) return <Loading />;
 
     return (
         <Text color="green">
-            New branch created - <Text bold>{result.branchName}</Text>
+            New branch created - <Text bold>{result.data.newBranchName}</Text>
         </Text>
     );
-};
-
-type UseBranchNewAction = Action & {
-    branchName: string;
-};
-
-const useBranchNew = ({ message }: { message: string }): UseBranchNewAction => {
-    const git = useGit();
-    const { attachTo } = useTree();
-
-    const branchName = safeBranchNameFromCommitMessage(message);
-
-    const performGitActions = useCallback(async () => {
-        const branchBefore = await git.currentBranch();
-
-        await git.createBranch({ branchName });
-        await git.checkout(branchName);
-        await git.addAllFiles();
-        await git.commit({ message });
-
-        return branchBefore;
-    }, [branchName]);
-
-    const performAction = useCallback(async () => {
-        await performGitActions().then((prevBranch) => {
-            attachTo({ newBranch: branchName, parent: prevBranch });
-        });
-    }, [branchName]);
-
-    const action = useAction({
-        asyncAction: performAction,
-    });
-
-    return {
-        isLoading: action.isLoading,
-        isError: action.isError,
-        error: action.error,
-        branchName,
-    } as UseBranchNewAction;
 };
 
 interface CommandArgs {
